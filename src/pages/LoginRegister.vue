@@ -22,8 +22,8 @@ const redirectToOAuthApp = appName => {
       if (appName === 'github') {
         OAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GitHubClientID}&redirect_uri=${GitHubRedirectUri}&scope=user:email`;
       }
-      window.location.href = OAuthUrl;
-      // console.log(OAuthUrl);
+      // window.location.href = OAuthUrl;
+      console.log(OAuthUrl);
     },
     centered: true
   })

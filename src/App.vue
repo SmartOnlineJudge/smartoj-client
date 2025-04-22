@@ -27,7 +27,7 @@
               enter-button
           />
         </div>
-        <div v-if="isLogin" class="bell">
+        <div v-if="userStore.isLogin" class="bell">
           <a href="#" @click="() => { router.push('/user/my-message') }">
             <a-tooltip placement="bottom">
               <template #title>
@@ -41,7 +41,7 @@
         </div>
         <div class="user-info">
           <!-- 未登录状态 -->
-          <div v-if="!isLogin">
+          <div v-if="!userStore.isLogin">
             <a-tooltip placement="bottom">
               <template #title>登录以获得更好的体验</template>
               <a-button style="font-size: 15px;" @click="() => { router.push('/login') }">登录</a-button>
@@ -50,8 +50,8 @@
           <!-- 已登录状态 -->
           <a-dropdown v-else placement="bottom" :align="{offset: [0, 12]}">
             <div class="avatar">
-              <a-avatar :src="MINIO_URL + '/user-avatars/default.webp'" alt="avatar" width="35"/>
-              <span style="font-size: 16px;margin-left: 5px">用户66666</span>
+              <a-avatar :src="MINIO_URL + userStore.user['avatar']" alt="avatar" width="35"/>
+              <span style="font-size: 16px;margin-left: 5px">{{ userStore.user['name'] }}</span>
             </div>
             <template #overlay>
               <a-menu @click="item => {router.push(item.key)}">
@@ -106,7 +106,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onBeforeMount } from 'vue';
+import { Modal } from "ant-design-vue";
 import {
   BellOutlined,
   IdcardOutlined,
@@ -116,14 +117,31 @@ import {
 } from "@ant-design/icons-vue";
 import { RouterView } from "vue-router";
 import router from "@/router/index.js";
+import { useUserStore } from "@/stores.js";
+import { userLogout } from "@/http.js";
+import { requestAndUpdateUser } from "@/utils.js";
 
+const userStore = useUserStore();
 const MINIO_URL = import.meta.env.VITE_MINIO_URL
 const searchContent = ref('');
-const isLogin = ref(true);
+
+onBeforeMount(requestAndUpdateUser)
 
 const logout = async () => {
-  console.log("logout");
+  Modal.confirm({
+    title: '警告',
+    content: '是否退出登录？',
+    onOk() {
+      return userLogout().then(() => {
+        userStore.isLogin = false
+        router.push('/')
+      })
+    },
+    okText: '确认',
+    cancelText: '取消',
+  })
 }
+
 const onSearch = v => {
   console.log(v);
 }
