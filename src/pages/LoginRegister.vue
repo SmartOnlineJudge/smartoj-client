@@ -22,8 +22,7 @@ const redirectToOAuthApp = appName => {
       if (appName === 'github') {
         OAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GitHubClientID}&redirect_uri=${GitHubRedirectUri}&scope=user:email`;
       }
-      // window.location.href = OAuthUrl;
-      console.log(OAuthUrl);
+      window.location.href = OAuthUrl;
     },
     centered: true
   })
@@ -69,14 +68,14 @@ const redirectToOAuthApp = appName => {
       <!-- 其它登录方式 -->
       <div style="width: 320px;margin: 18px auto 0 auto">
         <a-divider :plain="true">第三方平台授权登录</a-divider>
-        <div style="font-size: 23px;text-align: center">
+        <div style="font-size: 23px;display: flex;align-items: center;justify-content: center;">
           <a-tooltip placement="bottom">
             <template #title>使用 GitHub 登录</template>
             <GithubFilled style="margin-right: 7px" @click="() => { redirectToOAuthApp('github') }"/>
           </a-tooltip>
-          <a-tooltip placement="bottom">
+          <a-tooltip placement="bottom" class="qq-logo">
             <template #title>使用 QQ 登录</template>
-            <QqOutlined @click="() => { redirectToOAuthApp('qq') }"/>
+            <img src="/qq-mask.png" alt="qq logo" width="20" @click="() => { redirectToOAuthApp('qq') }"/>
           </a-tooltip>
         </div>
       </div>
@@ -106,5 +105,8 @@ const redirectToOAuthApp = appName => {
 .login-form {
   margin: 20px auto;
   width: 300px;
+}
+.qq-logo:hover {
+  cursor: pointer;
 }
 </style>

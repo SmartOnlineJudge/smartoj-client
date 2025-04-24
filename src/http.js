@@ -2,7 +2,8 @@ import axios from "axios";
 
 export const requests = axios.create({
   baseURL: '/api',
-  withCredentials: true
+  withCredentials: true,
+  timeout: 1000 * 10,
 })
 
 
