@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from "vue";
 import { Modal } from "ant-design-vue";
-import { QqOutlined, GithubFilled } from "@ant-design/icons-vue";
-import Register from "@/components/Register.vue";
-import LoginByPassword from "@/components/login/LoginByPassword.vue";
-import LoginByVerificationCode from "@/components/login/LoginByVerificationCode.vue";
+import { GithubFilled } from "@ant-design/icons-vue";
+import Register from "@/components/user/Register.vue";
+import LoginByPassword from "@/components/user/login/LoginByPassword.vue";
+import LoginByVerificationCode from "@/components/user/login/LoginByVerificationCode.vue";
 
 const GitHubClientID = import.meta.env.VITE_GITHUB_CLIENT_ID
 const GitHubRedirectUri = import.meta.env.VITE_GITHUB_REDIRECT_URI

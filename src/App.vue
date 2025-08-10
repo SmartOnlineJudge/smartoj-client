@@ -98,7 +98,7 @@
     </a-layout-content>
 
     <!-- 底部内容 -->
-    <a-layout-footer style="text-align: center">
+    <a-layout-footer v-if="router.currentRoute.value.path === '/'" style="text-align: center">
       <span>2025 智能算法刷题平台 桂ICP备8888888-1号</span>
     </a-layout-footer>
 

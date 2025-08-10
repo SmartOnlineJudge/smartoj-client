@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
+    "@kangc/v-md-editor": "^2.3.18",
+    "monaco-editor": "^0.52.2",
     "ant-design-vue": "^4.2.6",
     "axios": "^1.8.4",
     "pinia": "^3.0.2",
