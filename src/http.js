@@ -1,3 +1,4 @@
+import { ContactsFilled } from "@ant-design/icons-vue";
 import axios from "axios";
 
 export const requests = axios.create({
@@ -25,4 +26,8 @@ export const sendEmailVerificationCode = email => {
 
 export const userRegister = formData => {
   return requests.post('/user/register', formData)
+}
+
+export const getOnlineSovlingQuestionInfo = questionID => {
+  return requests.get('/question/online-solving', { params: { question_id: questionID } })
 }

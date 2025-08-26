@@ -14,8 +14,10 @@ const props = defineProps({
   fontSize: String,
 })
 
+let editorInstance = null; // 保存编辑器实例的引用
+
 onMounted(() => {
-  const editor = monaco.editor.create(document.getElementById('monaco-editor-container'), {
+  editorInstance = monaco.editor.create(document.getElementById('monaco-editor-container'), {
     automaticLayout: true,  // 窗口自适应
     value: code.value,
     language: language.value,
@@ -28,14 +30,22 @@ onMounted(() => {
     }
   });
   // 编辑器内容改变事件
-  editor.onDidChangeModelContent(() => {
-    code.value = editor.getValue();
+  editorInstance.onDidChangeModelContent(() => {
+    code.value = editorInstance.getValue();
   })
   // 监听 language 变化，变化之后修改编辑器的语言类型
   watch(language, new_language => {
-    monaco.editor.setModelLanguage(editor.getModel(), new_language);  // 更新编辑器语言类型
-    editor.setValue(code.value)  // 更新编辑器代码
+    monaco.editor.setModelLanguage(editorInstance.getModel(), new_language);  // 更新编辑器语言类型
+    editorInstance.setValue(code.value)  // 更新编辑器代码
   })
+
+  // 监听 code 变化，变化之后修改编辑器的代码
+  watch(code, newCode => {
+    // 避免由编辑器内部修改触发的 watch 回调（可选优化）
+    if (editorInstance && newCode !== editorInstance.getValue()) {
+        editorInstance.setValue(newCode || ''); // 确保是字符串
+    }
+  }, { flush: 'post' }); // 在 DOM 更新后执行，确保编辑器已就绪
 })
 </script>
 

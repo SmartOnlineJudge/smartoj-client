@@ -1,7 +1,21 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import QuestionDescription from '@/components/coding/QuestionDescription.vue';
 import WorkSpace from '@/components/coding/WorkSpace.vue';
+import { getOnlineSovlingQuestionInfo } from '@/http';
+import { useQuestionStore } from '@/stores';
+
+const props = defineProps({
+  questionID: Number
+})
+const questionStore = useQuestionStore()
+
+onMounted(() => {
+  const questionID = props.questionID
+  getOnlineSovlingQuestionInfo(questionID).then(response => { 
+    questionStore.setQuestion(response.data.data)
+  })
+})
 
 // 左侧宽度百分比，默认40%
 const leftWidth = ref(40)

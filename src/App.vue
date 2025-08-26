@@ -15,7 +15,7 @@
       >
         <a-menu-item key="/">首页</a-menu-item>
         <a-menu-item key="/questions">题库</a-menu-item>
-        <a-menu-item key="/coding">在线刷题</a-menu-item>
+        <!-- <a-menu-item key="/coding">在线刷题</a-menu-item> -->
         <a-menu-item key="/about">关于我们</a-menu-item>
       </a-menu>
       <div class="more">

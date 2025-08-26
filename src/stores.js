@@ -11,3 +11,13 @@ export const useUserStore = defineStore('user', () => {
 
   return { isLogin, user, setUser }
 })
+
+export const useQuestionStore = defineStore('question', () => {
+  const question = ref({})
+
+  const setQuestion = _question => {
+    question.value = _question
+  }
+
+  return { question, setQuestion }
+})

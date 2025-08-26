@@ -1,34 +1,62 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import MonacoEditor from "@/components/MonacoEditor.vue";
 import { 
   EditTwoTone,
   PlayCircleTwoTone, 
   UploadOutlined
- } from "@ant-design/icons-vue";
+} from "@ant-design/icons-vue";
+import { useQuestionStore } from '@/stores';
 
-// 该题目支持的编程语言，需要从后端获取
-const validLanguages = [
-  {name: "Python", value: "python"},
-  {name: "JavaScript", value: "javascript"},
-  {name: "C++", value: "cpp"},
-  {name: "Java", value: "java"},
-  {name: "C", value: "c"},
-  {name: "Golang", value: "go"},
-]
-// 有效编程语言对应的解题框架，需要从后端获取
-const solvingFrameworks = {
-  python: "print('Hello World')",
-  javascript: "console.log('Hello World')",
-  cpp: "#include <iostream>\n\nint main() {\n\tstd::cout << \"Hello World\" << std::endl;\n\treturn 0;\n}",
-  java: "public class Main {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println(\"Hello World\");\n\t}\n}",
-  c: "#include <stdio.h>\n\nint main() {\n\tprintf(\"Hello World\");\n\treturn 0;\n}",
-  go: "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello World\")\n}",
-}
+
+const questionStore = useQuestionStore();
 
 const currentLanguage = ref("python");
-const solvingFramework = ref(solvingFrameworks[currentLanguage.value]);
 const theme = ref("vs");
+const languageValueMapping = {
+  "Python": "python",
+  "JavaScript": "javascript",
+  "C++": "cpp",
+  "Java": "java",
+  "C": "c",
+  "Golang": "go"
+}
+
+// 该题目支持的编程语言，需要从后端获取
+const validLanguages = computed(() => {
+  if (!questionStore.question || !questionStore.question.solving_frameworks) {
+    return []
+  }
+  return questionStore.question.solving_frameworks.map(lang => {
+    return {
+      name: lang.language.name,
+      value: languageValueMapping[lang.language.name]
+    }
+  })
+})
+
+// 有效编程语言对应的解题框架，需要从后端获取
+const solvingFramework = ref("");
+const solvingFrameworks = computed(() => {
+  if (!questionStore.question || !questionStore.question.solving_frameworks) {
+    return {}
+  }
+  const result = {}
+  questionStore.question.solving_frameworks.forEach(lang => {
+    const key = languageValueMapping[lang.language.name]
+    const value = lang.code_framework
+    result[key] = value
+  })
+  return result
+})
+
+watch(solvingFrameworks, newFrameworks => {
+  solvingFramework.value = newFrameworks[currentLanguage.value] || "";
+});
+
+const submit = submitType => {
+  console.log(solvingFramework.value)
+}
 </script>
 
 <template>
@@ -46,10 +74,10 @@ const theme = ref("vs");
         :field-names="{ label: 'name', value: 'value' }"
         @select="v => { solvingFramework = solvingFrameworks[v] }"
       />
-      <a-button type="default" style="margin-left: auto;">
-        <PlayCircleTwoTone/>测试
+      <a-button type="default" style="margin-left: auto;" @click="submit('test')">
+        <PlayCircleTwoTone />测试
       </a-button>
-      <a-button type="primary" style="margin: 0 15px 0 10px;">
+      <a-button type="primary" style="margin: 0 15px 0 10px;" @click="submit('submit')">
         <UploadOutlined />提交
       </a-button>
     </div>

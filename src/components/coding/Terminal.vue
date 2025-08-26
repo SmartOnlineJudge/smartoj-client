@@ -1,16 +1,30 @@
 <script setup>
+import { computed } from 'vue'
 import { 
   CodeTwoTone,
   CheckCircleOutlined,
   CloseCircleOutlined,
   InfoCircleOutlined
- } from "@ant-design/icons-vue";
+} from "@ant-design/icons-vue";
+import { useQuestionStore } from '@/stores';
 
-const tests = [
-  {test_id: 1, input_output: "5\n1 2 3 4 5\n10", criterion: null, answer: null},
-  {test_id: 2, input_output: "5\n1 2 3 4 5\n10", criterion: null, answer: null},
-  {test_id: 3, input_output: "5\n1 2 3 4 5\n10", criterion: null, answer: null}
-]
+const questionStore = useQuestionStore();
+// const tests = [
+//   {test_id: 1, input_output: "5\n1 2 3 4 5\n10", criterion: null, answer: null},
+//   {test_id: 2, input_output: "5\n1 2 3 4 5\n10", criterion: null, answer: null},
+//   {test_id: 3, input_output: "5\n1 2 3 4 5\n10", criterion: null, answer: null}
+// ]
+const tests = computed(() => {
+  if (!questionStore.question || !questionStore.question.tests) {
+    return []
+  }
+  return questionStore.question.tests.map(test => {
+    return {
+      test_id: test.id,
+      input_output: test.input_output,
+    }
+  })
+})
 </script>
 
 <template>
@@ -39,7 +53,7 @@ const tests = [
             </template>
             <template #extra>
               <CheckCircleOutlined style="color: #52c41a;"/>
-               <!-- <CloseCircleOutlined style="color: red;"/> -->
+              <CloseCircleOutlined style="color: red;"/>
             </template>
             <span class="test-case-field">原始输入：</span>
             <pre>{{ test.input_output }}</pre>

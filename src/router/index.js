@@ -9,9 +9,10 @@ const router = createRouter({
       component: () => import('../pages/Index.vue')
     },
     {
-      path: '/coding',
+      path: '/coding/:questionID',
       name: 'coding',
-      component: () => import('../pages/Coding.vue')
+      component: () => import('../pages/Coding.vue'),
+      props: route => ({ questionID: Number(route.params.questionID) }),
     },
     {
       path: '/questions',
