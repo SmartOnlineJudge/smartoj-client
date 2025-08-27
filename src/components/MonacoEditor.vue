@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, watch } from "vue";
+import { onMounted, watch, onUnmounted } from "vue";
 import * as monaco from 'monaco-editor'
 
 // 定义双向数据流，父组件通过 v-model 来绑定
@@ -46,6 +46,12 @@ onMounted(() => {
         editorInstance.setValue(newCode || ''); // 确保是字符串
     }
   }, { flush: 'post' }); // 在 DOM 更新后执行，确保编辑器已就绪
+})
+
+onUnmounted(() => {
+  if (editorInstance) {
+    editorInstance.dispose();
+  }
 })
 </script>
 

@@ -4,6 +4,7 @@ import QuestionDescription from '@/components/coding/QuestionDescription.vue';
 import WorkSpace from '@/components/coding/WorkSpace.vue';
 import { getOnlineSovlingQuestionInfo } from '@/http';
 import { useQuestionStore } from '@/stores';
+import router from '@/router/index.js';
 
 const props = defineProps({
   questionID: Number
@@ -12,7 +13,11 @@ const questionStore = useQuestionStore()
 
 onMounted(() => {
   const questionID = props.questionID
-  getOnlineSovlingQuestionInfo(questionID).then(response => { 
+  getOnlineSovlingQuestionInfo(questionID).then(response => {
+    if (response.data.code === 255) {
+      router.push('/404')
+      return
+    }
     questionStore.setQuestion(response.data.data)
   })
 })

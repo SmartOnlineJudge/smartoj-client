@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { 
   ProfileTwoTone, 
   MessageTwoTone, 
@@ -12,6 +12,17 @@ import { useQuestionStore } from '@/stores';
 const questionStore = useQuestionStore()
 
 const radioValue = ref('description');
+const title = ref("");
+const description = ref("");
+const tags = ref([]);
+const difficulty = ref("");
+
+watch(() => questionStore.question, () => {
+  title.value = questionStore.question.title;
+  description.value = questionStore.question.description;
+  tags.value = questionStore.question.tags;
+  difficulty.value = questionStore.question.difficulty;
+})
 </script>
 
 <template>
@@ -45,17 +56,17 @@ const radioValue = ref('description');
     </div>
     <div id="question-description-content">
       <div v-if="radioValue === 'description'">
-        <h1 class="question-title">{{ questionStore.question.title }}</h1>
+        <h1 class="question-title">{{ title }}</h1>
         <div class="question-info">
-          <a-tag v-if="questionStore.question.difficulty === 'hard'" color="error">困难</a-tag>
-          <a-tag v-else-if="questionStore.question.difficulty === 'easy'" color="success">简单</a-tag>
-          <a-tag v-else color="warning">中等</a-tag>
+          <a-tag v-if="difficulty === 'hard'" color="error">困难</a-tag>
+          <a-tag v-else-if="difficulty === 'easy'" color="success">简单</a-tag>
+          <a-tag v-else-if="difficulty === 'medium'" color="warning">中等</a-tag>
           
-          <a-tag v-for="tag in questionStore.question.tags" color="processing">{{ tag.tag.name }}</a-tag>
+          <a-tag v-for="tag in tags" color="processing">{{ tag.tag.name }}</a-tag>
         </div>
         <a-divider />
         <v-md-editor 
-          v-model="questionStore.question.description" 
+          v-model="description" 
           mode="preview"
         />
       </div>

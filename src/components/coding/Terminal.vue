@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, watch } from 'vue'
 import { 
   CodeTwoTone,
   CheckCircleOutlined,
@@ -9,21 +9,31 @@ import {
 import { useQuestionStore } from '@/stores';
 
 const questionStore = useQuestionStore();
-// const tests = [
-//   {test_id: 1, input_output: "5\n1 2 3 4 5\n10", criterion: null, answer: null},
-//   {test_id: 2, input_output: "5\n1 2 3 4 5\n10", criterion: null, answer: null},
-//   {test_id: 3, input_output: "5\n1 2 3 4 5\n10", criterion: null, answer: null}
-// ]
-const tests = computed(() => {
-  if (!questionStore.question || !questionStore.question.tests) {
-    return []
-  }
-  return questionStore.question.tests.map(test => {
-    return {
-      test_id: test.id,
-      input_output: test.input_output,
-    }
+const tests = ref([]);
+
+watch(() => questionStore.question, () => {
+  const _tests = []
+  questionStore.question.tests.forEach(test => {
+    _tests.push({test_id: test.id, input_output: test.input_output})
   })
+  _tests.sort((a, b) => a.test_id - b.test_id)
+  tests.value = _tests
+})
+
+watch(() => questionStore.judgeType, () => {
+  const judgeType = questionStore.judgeType
+  let judgeRecords = questionStore.judgeRecords
+  if (judgeType === "test") {
+    judgeRecords.sort((a, b) => a.test_id - b.test_id)
+    judgeRecords.forEach((judgeRecord, i) => {
+      tests.value[i].criterion = judgeRecord.criterion
+      tests.value[i].result = judgeRecord.result
+      tests.value[i].answer = judgeRecord.answer
+      tests.value[i].is_success = judgeRecord.is_success
+    })
+  } else {
+    console.log("跳转到提交历史页面")
+  }
 })
 </script>
 
@@ -52,8 +62,10 @@ const tests = computed(() => {
               </span>
             </template>
             <template #extra>
-              <CheckCircleOutlined style="color: #52c41a;"/>
-              <CloseCircleOutlined style="color: red;"/>
+              <div v-if="test.is_success !== undefined">
+                <CheckCircleOutlined v-if="test.is_success" style="color: #52c41a;"/>
+                <CloseCircleOutlined v-else style="color: red;"/>
+              </div>
             </template>
             <span class="test-case-field">原始输入：</span>
             <pre>{{ test.input_output }}</pre>
@@ -61,6 +73,8 @@ const tests = computed(() => {
             <pre>{{ test.criterion || "请先运行代码" }}</pre>
             <span class="test-case-field">代码输出：</span>
             <pre>{{ test.answer || "请先运行代码" }}</pre>
+            <span class="test-case-field">代码运行状态：</span>
+            <pre>{{ test.result || "请先运行代码" }}</pre>
           </a-collapse-panel>
         </a-collapse>
       </div>

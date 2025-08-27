@@ -31,3 +31,21 @@ export const userRegister = formData => {
 export const getOnlineSovlingQuestionInfo = questionID => {
   return requests.get('/question/online-solving', { params: { question_id: questionID } })
 }
+
+export const judgeQuestion = (questionID, code, languageID, judgeType) => {
+  return requests.post('/codesandbox/judgement', 
+    { question_id: questionID, code: code, language_id: languageID, judge_type: judgeType }
+  )
+}
+
+export const getSubmitRecord = submitRecordID => {
+  return requests.get('/codesandbox/submit-record', { params: { submit_record_id: submitRecordID } })
+}
+
+export const getJudgeRecord = submitRecordID => {
+  return requests.get('/codesandbox/judge-record', { params: { submit_record_id: submitRecordID } })
+}
+
+export const getLanguageList = () => {
+  return requests.get('/question/languages')
+}

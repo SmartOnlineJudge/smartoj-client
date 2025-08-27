@@ -54,6 +54,18 @@ const router = createRouter({
       path: '/user/my-message',
       name: 'my-message',
       component: () => import('../pages/user/MyMessage.vue')
+    },
+    {
+      path: '/404',
+      name: 'not-found',
+      component: () => import('../pages/NotFound.vue'),
+      meta: {
+        title: '找不到该页面'
+      }
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/404'
     }
   ]
 })

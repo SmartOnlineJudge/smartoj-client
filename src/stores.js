@@ -14,10 +14,27 @@ export const useUserStore = defineStore('user', () => {
 
 export const useQuestionStore = defineStore('question', () => {
   const question = ref({})
+  const judgeRecords = ref([])
+  const judgeType = ref('')
 
   const setQuestion = _question => {
     question.value = _question
   }
 
-  return { question, setQuestion }
+  const setJudgeRecords = _judgeRecords => {
+    judgeRecords.value = _judgeRecords
+  }
+
+  const setJudgeType = _judgeType => {
+    judgeType.value = _judgeType
+  }
+
+  return { 
+    question, 
+    setQuestion, 
+    judgeRecords, 
+    setJudgeRecords, 
+    judgeType, 
+    setJudgeType 
+  }
 })
