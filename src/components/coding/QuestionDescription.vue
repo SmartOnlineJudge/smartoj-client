@@ -16,12 +16,18 @@ const title = ref("");
 const description = ref("");
 const tags = ref([]);
 const difficulty = ref("");
+const loading = ref(true);
 
 watch(() => questionStore.question, () => {
   title.value = questionStore.question.title;
   description.value = questionStore.question.description;
   tags.value = questionStore.question.tags;
   difficulty.value = questionStore.question.difficulty;
+  loading.value = false;
+})
+
+watch(() => questionStore.requireJumpToSolvingHistory, () => {
+  radioValue.value = "history"
 })
 </script>
 
@@ -56,19 +62,23 @@ watch(() => questionStore.question, () => {
     </div>
     <div id="question-description-content">
       <div v-if="radioValue === 'description'">
-        <h1 class="question-title">{{ title }}</h1>
-        <div class="question-info">
-          <a-tag v-if="difficulty === 'hard'" color="error">困难</a-tag>
-          <a-tag v-else-if="difficulty === 'easy'" color="success">简单</a-tag>
-          <a-tag v-else-if="difficulty === 'medium'" color="warning">中等</a-tag>
-          
-          <a-tag v-for="tag in tags" color="processing">{{ tag.tag.name }}</a-tag>
-        </div>
+        <a-skeleton :loading="loading" :paragraph="{ rows: 1 }" :title="false" active>
+          <h1 class="question-title">{{ title }}</h1>
+          <div class="question-info">
+            <a-tag v-if="difficulty === 'hard'" color="error">困难</a-tag>
+            <a-tag v-else-if="difficulty === 'easy'" color="success">简单</a-tag>
+            <a-tag v-else-if="difficulty === 'medium'" color="warning">中等</a-tag>
+            
+            <a-tag v-for="tag in tags" color="processing">{{ tag.tag.name }}</a-tag>
+          </div>
+        </a-skeleton>
         <a-divider />
-        <v-md-editor 
-          v-model="description" 
-          mode="preview"
-        />
+        <a-skeleton :loading="loading" :paragraph="{ rows: 12 }" active :title="false">
+          <v-md-editor 
+            v-model="description" 
+            mode="preview"
+          />
+        </a-skeleton>
       </div>
       <div v-else-if="radioValue === 'communication'">
         讨论区

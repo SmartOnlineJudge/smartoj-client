@@ -16,6 +16,8 @@ export const useQuestionStore = defineStore('question', () => {
   const question = ref({})
   const judgeRecords = ref([])
   const judgeType = ref('')
+  const judgeID = ref(1)
+  const requireJumpToSolvingHistory = ref(1)
 
   const setQuestion = _question => {
     question.value = _question
@@ -29,12 +31,24 @@ export const useQuestionStore = defineStore('question', () => {
     judgeType.value = _judgeType
   }
 
+  const incrementJudgeID = () => {
+    judgeID.value += 1
+  }
+
+  const incrementRequireJumpToSolvingHistory = _requireJumpToSolvingHistory => {
+    requireJumpToSolvingHistory.value += 1
+  }
+
   return { 
     question, 
     setQuestion, 
     judgeRecords, 
     setJudgeRecords, 
     judgeType, 
-    setJudgeType 
+    setJudgeType,
+    judgeID,
+    incrementJudgeID,
+    requireJumpToSolvingHistory,
+    incrementRequireJumpToSolvingHistory,
   }
 })
