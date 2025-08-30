@@ -6,15 +6,17 @@ import {
   UploadOutlined
 } from "@ant-design/icons-vue";
 import MonacoEditor from "@/components/MonacoEditor.vue";
-import { useQuestionStore } from '@/stores';
+import { useQuestionStore, useUserStore } from '@/stores';
 import { 
   judgeQuestion, 
   getSubmitRecord, 
   getJudgeRecord, 
   getLanguageList 
 } from "@/http";
+import router from "@/router/index";
 
 const questionStore = useQuestionStore();
+const userStore = useUserStore();
 
 const currentLanguage = ref("python");
 const theme = ref("vs");
@@ -122,24 +124,34 @@ const submit = async judgeType => {
         :options="validLanguages"
         :field-names="{ label: 'name', value: 'value' }"
       />
-      <a-button 
-        type="default" 
-        style="margin-left: auto;" 
-        @click="() => { submit('test') }"
-        :loading="testButtonLoading"
-        :disabled="testButtonDisabled"
-      >
-        <PlayCircleTwoTone />测试
-      </a-button>
-      <a-button 
-        type="primary" 
-        style="margin: 0 15px 0 10px;" 
-        @click="() => { submit('submit') }"
-        :loading="submitButtonLoading"
-        :disabled="submitButtonDisabled"
-      >
-        <UploadOutlined />提交
-      </a-button>
+      <div v-if="userStore.isLogin" class="submit-test-button">
+        <a-button 
+          type="default" 
+          @click="() => { submit('test') }"
+          :loading="testButtonLoading"
+          :disabled="testButtonDisabled"
+        >
+          <PlayCircleTwoTone />测试
+        </a-button>
+        <a-button 
+          type="primary" 
+          style="margin: 0 15px 0 10px;" 
+          @click="() => { submit('submit') }"
+          :loading="submitButtonLoading"
+          :disabled="submitButtonDisabled"
+        >
+          <UploadOutlined />提交
+        </a-button>
+      </div>
+      <div class="submit-test-button" v-else>
+        <a-button 
+          type="default"
+          style="margin-right: 15px;"
+          @click="() => { router.push('/login') }"
+        >
+          登录以提交代码
+        </a-button>
+      </div>
     </div>
     <a-divider style="margin: 0 0 20px 0;"/>
     <div style="margin-top: 10px;">
@@ -160,5 +172,9 @@ const submit = async judgeType => {
   height: 45px;
   display: flex;
   align-items: center;
+}
+
+.submit-test-button {
+  margin-left: auto;
 }
 </style>

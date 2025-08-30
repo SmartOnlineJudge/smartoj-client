@@ -44,7 +44,7 @@ watch(() => questionStore.judgeID, () => {
     <div class="terminal-header">
       <span style="margin-left: 15px;font-size: 16px;font-weight: bold;">
         <CodeTwoTone />
-        控制台
+        测试用例
       </span>
     </div>
     <a-divider style="margin: 0 0 15px 0;"/>

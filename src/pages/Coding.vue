@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import QuestionDescription from '@/components/coding/QuestionDescription.vue';
+import QuestionInfoPanel from '@/components/coding/QuestionInfoPanel.vue';
 import WorkSpace from '@/components/coding/WorkSpace.vue';
 import { getOnlineSovlingQuestionInfo } from '@/http';
 import { useQuestionStore } from '@/stores';
@@ -57,9 +57,9 @@ const stopDrag = () => {
 
 <template>
   <div id="coding-content">
-    <!-- 问题描述 -->
+    <!-- 问题信息面板 -->
     <div id="question-description" class="panel" :style="{ width: leftWidth + '%' }">
-      <QuestionDescription />
+      <QuestionInfoPanel />
     </div>
     
     <!-- 拖拽条 -->

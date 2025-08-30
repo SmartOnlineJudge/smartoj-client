@@ -12,12 +12,15 @@ const language = defineModel('language')
 const props = defineProps({
   theme: String,
   fontSize: String,
+  editorContainerID: String,
+  readOnly: Boolean,
 })
 
 let editorInstance = null; // 保存编辑器实例的引用
+const editorContainerID = props.editorContainerID || 'monaco-editor-container'
 
 onMounted(() => {
-  editorInstance = monaco.editor.create(document.getElementById('monaco-editor-container'), {
+  editorInstance = monaco.editor.create(document.getElementById(editorContainerID), {
     automaticLayout: true,  // 窗口自适应
     value: code.value,
     language: language.value,
@@ -27,7 +30,8 @@ onMounted(() => {
     scrollbar: {
       vertical: 'hidden',
       horizontal: 'hidden'
-    }
+    },
+    readOnly: props.readOnly || false,
   });
   // 编辑器内容改变事件
   editorInstance.onDidChangeModelContent(() => {
@@ -56,5 +60,5 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div id="monaco-editor-container" style="width: 100%; height: 50vh;z-index: -1;"></div>
+  <div :id="editorContainerID" style="width: 100%; height: 50vh;z-index: -1;"></div>
 </template>

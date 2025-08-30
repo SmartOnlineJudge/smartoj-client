@@ -38,12 +38,22 @@ export const judgeQuestion = (questionID, code, languageID, judgeType) => {
   )
 }
 
-export const getSubmitRecord = submitRecordID => {
-  return requests.get('/codesandbox/submit-record', { params: { submit_record_id: submitRecordID } })
+export const getSubmitRecord = (submitRecordID, questionID) => {
+  const params = questionID ? { question_id: questionID } : { submit_record_id: submitRecordID }
+  return requests.get('/codesandbox/submit-record', { params: params })
 }
 
-export const getJudgeRecord = submitRecordID => {
-  return requests.get('/codesandbox/judge-record', { params: { submit_record_id: submitRecordID } })
+export const getJudgeRecord = (submitRecordID, requireInputOutput) => {
+  let params = {}
+  if (requireInputOutput !== undefined) {
+    params = { 
+      require_input_output: requireInputOutput,
+      submit_record_id: submitRecordID
+    }
+  } else {
+    params = { submit_record_id: submitRecordID }
+  }
+  return requests.get('/codesandbox/judge-record', { params: params })
 }
 
 export const getLanguageList = () => {
