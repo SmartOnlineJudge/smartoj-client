@@ -43,8 +43,9 @@ import SolutionSummary from "@/components/user/user-center/SolutionSummary.vue";
   width: 70vw;
 }
 .user-center-left {
-  height: 260px;
+  height: max-content;
   min-width: 20%;
+  max-width: 22%;
 }
 .user-center-right {
   display: flex;
