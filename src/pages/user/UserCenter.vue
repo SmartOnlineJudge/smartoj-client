@@ -40,7 +40,7 @@ import SolutionSummary from "@/components/user/user-center/SolutionSummary.vue";
 .user-center {
   display: flex;
   margin: 20px auto 0 auto;
-  width: 70vw;
+  width: 65vw;
 }
 .user-center-left {
   height: max-content;
