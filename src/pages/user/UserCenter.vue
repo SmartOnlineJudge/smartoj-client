@@ -34,7 +34,7 @@ import SolutionSummary from "@/components/user/user-center/SolutionSummary.vue";
 .base-box-style {
   background-color: white;
   border-radius: 10px;
-  min-height: 180px;
+  min-height: 170px;
   margin-bottom: 15px;
 }
 .user-center {
