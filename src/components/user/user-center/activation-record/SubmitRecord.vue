@@ -22,7 +22,7 @@
           <a-tag v-for="tag in quetion.tags" :key="tag.id" color="processing">{{ tag.tag.name }}</a-tag>
         </div>
       </div>
-      <a-divider style="margin-top: 15px;"/>
+      <a-divider style="margin-top: 15px;margin-bottom: 15px;"/>
     </div>
     <div class="pagination">
       <a-pagination 
