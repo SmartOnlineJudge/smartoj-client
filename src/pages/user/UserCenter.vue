@@ -13,18 +13,18 @@ import SolutionSummary from "@/components/user/user-center/SolutionSummary.vue";
       <UserBaseInfo/>
     </div>
     <div class="user-center-right">
-      <!-- 右边第一行 -->
+      <!-- 刷题总结、其他 -->
       <div style="display: flex;">
         <SolutionSummary class="base-box-style" style="width: 49%;"/>
         <div class="base-box-style" style="width: 49%;margin-left: auto;">
           暂时不知道放什么
         </div>
       </div>
-      <!-- 右边第二行 -->
+      <!-- 刷题热力图 -->
       <SolutionHeatMap class="base-box-style"/>
-      <!-- 右边第三行 -->
+      <!-- 用户画像、用户能力 -->
       <UserProfile class="base-box-style"/>
-      <!-- 右边第四行 -->
+      <!-- 活跃记录 -->
       <ActivationRecord class="base-box-style"/>
     </div>
   </div>
