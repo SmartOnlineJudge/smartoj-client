@@ -1,4 +1,3 @@
-import { ContactsFilled } from "@ant-design/icons-vue";
 import axios from "axios";
 
 export const requests = axios.create({
@@ -58,4 +57,20 @@ export const getJudgeRecord = (submitRecordID, requireInputOutput) => {
 
 export const getLanguageList = () => {
   return requests.get('/question/languages')
+}
+
+export const getPassedCountGroupByDifficulty = () => {
+  return requests.get('/user/passed-count-group-by-difficulty')
+}
+
+export const getQuestionCountGroupByDifficulty = () => {
+  return requests.get('/question/count-group-by-difficulty')
+}
+
+export const getSolutionHeatmap = () => {
+  return requests.get('/user/solution-heatmap')
+}
+
+export const getSubmitRecords = (page, size) => {
+  return requests.get('/user/submit-records', { params: { page: page, size: size } })
 }

@@ -21,7 +21,17 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+
 import Contributions from '@/components/Contributions.vue';
+import { getSolutionHeatmap } from '@/http';
+
+const contributionData = ref({});
+
+onMounted(async() => {
+  const response = await getSolutionHeatmap();
+  contributionData.value = response.data.data;
+})
 
 const sum = (arr) => {
   let res = 0
@@ -29,12 +39,6 @@ const sum = (arr) => {
     res += arr[i]
   }
   return res
-}
-const contributionData = {
-  "2025-01-01": 5, 
-  "2025-01-02": 3,
-  "2025-07-02": 10,
-  "2025-10-02": 1,
 }
 </script>
 
