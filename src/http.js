@@ -78,3 +78,30 @@ export const getSubmitRecords = (page, size) => {
 export const updateUserInfo = (name, profile) => {
   return requests.put('/user', { name, profile })
 }
+
+export const updatePassword = (new_password, vfcode) => {
+  return requests.patch('/user/password',
+    {
+      new_password: new_password,
+      vfcode: vfcode
+    }
+  )
+}
+
+export const updateEmail = (new_email, vfcode) => {
+  return requests.patch('/user/email',
+    {
+      new_email: new_email,
+      vfcode: vfcode
+    }
+  )
+}
+
+export const verifyCode = (recipient) => {
+  return requests.post('/user/verification-code', {recipient: recipient})
+}
+
+export const checkVerifyCode = (vfcode, email) => {
+  return requests.post('/user/check-verification-code', {vfcode: vfcode, email: email})
+}
+
