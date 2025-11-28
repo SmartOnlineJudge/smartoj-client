@@ -74,3 +74,7 @@ export const getSolutionHeatmap = () => {
 export const getSubmitRecords = (page, size) => {
   return requests.get('/user/submit-records', { params: { page: page, size: size } })
 }
+
+export const updateUserInfo = (name, profile) => {
+  return requests.put('/user', { name, profile })
+}
