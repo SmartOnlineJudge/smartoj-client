@@ -22,7 +22,7 @@ onMounted(() => {
 </script>
 
 <template> 
-  <div>
+  <div style="padding: 15px;">
     <a-skeleton :loading="loading" :paragraph="{ rows: 1 }" :title="false" active>
       <h1 class="question-title">{{ title }}</h1>
       <div class="question-info">

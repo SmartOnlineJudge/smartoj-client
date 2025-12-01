@@ -49,7 +49,7 @@ watch(() => questionStore.requireJumpToSolvingHistory, () => {
         </a-radio-button>
         <a-radio-button value="communication">
           <MessageTwoTone />
-          讨论区
+          评论区
         </a-radio-button>
         <a-radio-button value="solution">
           <ExperimentTwoTone />
@@ -93,10 +93,6 @@ watch(() => questionStore.requireJumpToSolvingHistory, () => {
 .question-info-panel-title :deep(.ant-radio-button-wrapper) {
   flex: 1;
   text-align: center;
-}
-
-.question-info-panel-content {
-  padding: 17px;
 }
 
 .question-info-panel-content :deep(.github-markdown-body) {

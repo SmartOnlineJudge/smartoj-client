@@ -231,6 +231,9 @@ const onClickRow = record => {
 </script>
 
 <style scoped>
+#submit-record {
+  padding: 15px;
+}
 .modal-content :deep(.ant-table-tbody) td {
   white-space: normal;
   word-wrap: break-word;
