@@ -2,7 +2,7 @@
   <div id="question-solution-area">
     <div class="solution-list" :hidden="shouldOpenSolution">
       <div class="create-solution">
-        <a-button type="dashed" style="width: 100%;"><PlusCircleTwoTone />创建题解</a-button>
+        <a-button type="dashed" style="width: 100%;" @click="createSolution"><PlusCircleTwoTone />创建题解</a-button>
       </div>
       <div class="solution-area">
         <div v-for="solution in solutionData" class="solution" @click="() => { openSoultion(solution.id) }">
@@ -82,7 +82,9 @@ import {
 } from "@ant-design/icons-vue";
 
 import Comment from "@/components/comment/Comment.vue";
+import { useQuestionStore } from "@/stores";
 
+const questionStore = useQuestionStore();
 const MINIO_URL = import.meta.env.VITE_MINIO_URL
 const shouldOpenSolution = ref(false);
 const solutionData = ref([
@@ -193,6 +195,9 @@ const loadMoreSolutions = () => {
     views: 456,
     comments: 234
   })
+}
+const createSolution = () => {
+  window.open('/create-solution/' + questionStore.question.id)
 }
 </script>
 

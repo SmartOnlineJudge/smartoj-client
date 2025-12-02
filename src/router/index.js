@@ -56,6 +56,12 @@ const router = createRouter({
       component: () => import('../pages/user/MyMessage.vue')
     },
     {
+      path: '/create-solution/:questionID',
+      name: 'create-solution',
+      component: () => import('../pages/CreateSolution.vue'),
+      props: route => ({ questionID: Number(route.params.questionID) }),
+    },
+    {
       path: '/404',
       name: 'not-found',
       component: () => import('../pages/NotFound.vue'),
