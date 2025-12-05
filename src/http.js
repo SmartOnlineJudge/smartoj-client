@@ -105,3 +105,78 @@ export const checkVerifyCode = (vfcode, email) => {
   return requests.post('/user/check-verification-code', {vfcode: vfcode, email: email})
 }
 
+export const getRootComments = (targetID, CommentType, page, size) => {
+  return requests.get(
+    '/comment/root-comments', 
+    { 
+      params: { 
+        target_id: targetID,
+        comment_type: CommentType,
+        page: page,
+        size: size
+      }
+    }
+  )
+}
+
+export const getChildComments = (rootCommentID, cursor, size) => {
+  return requests.get(
+    '/comment/child-comments',
+    {
+      params: {
+        root_comment_id: rootCommentID,
+        cursor: cursor,
+        size: size
+      }
+    }
+  )
+}
+
+export const createComment = (content, type, targetID, toCommentID = null, rootCommentID = null) => {
+  return requests.post(
+    '/comment',
+    {
+      content: content,
+      type: type,
+      target_id: targetID,
+      to_comment_id: toCommentID,
+      root_comment_id: rootCommentID
+    }
+  )
+}
+
+export const getCommentCount = (targetID, commentType) => {
+  return requests.get(
+    '/comment/count',
+    {
+      params: {
+        target_id: targetID,
+        comment_type: commentType
+      }
+    }
+  )
+}
+
+export const getSolutionList = (questionID, cursor, size) => {
+  return requests.get(
+    '/solution/list',
+    {
+      params: {
+        question_id: questionID,
+        cursor: cursor,
+        size: size
+      }
+    }
+  )
+}
+
+export const getSolution = (solutionID) => {
+  return requests.get(
+    '/solution',
+    {
+      params: {
+        solution_id: solutionID
+      }
+    }
+  )
+}

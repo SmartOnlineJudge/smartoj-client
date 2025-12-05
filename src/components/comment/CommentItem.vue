@@ -29,46 +29,56 @@
           />
           <div class="reply-main-comment-controller">
             <a-button @click="() => { isShowReplyMainCommentInput = false }" style="margin-right: 10px;">取消</a-button>
-            <a-button type="primary" @click="relpyParentComment">回复</a-button>
+            <a-button type="primary" @click="relpyParentComment" :loading="relpyParentCommentLoading">回复</a-button>
           </div>
         </div>
       </div>
       <!-- 子评论列表 -->
       <div v-if="isShowSubComment" class="sub-comment-list">
-        <div v-for="subComment in subCommentList" class="sub-comment-item" :key="subComment.comment_id">
-          <div class="comment-left">
-            <a-avatar :src="subComment.avatar" alt="avatar" :size="30"/>
-          </div>
-          <div class="comment-right">
-            <span style="font-size: 16px;">{{ subComment.username }}</span>
-            <span style="color: gray;margin-top: 2px;">发表于 {{ subComment.createdAt }}</span>
-            <span style="font-size: 16px;margin-top: 5px;">{{ subComment.content }}</span>
-            <!-- 回复子评论的输入框 -->
-            <div class="comment-right-controller">
-              <span class="controller-interact" @click="() => { replyInputVisible[subComment.comment_id] = true }">
-                <RollbackOutlined /> 回复
+        <a-skeleton :loading="pullSubCommentLoading" :paragraph="{ rows: 5 }" :title="false" active>
+          <div v-for="subComment in subCommentList" class="sub-comment-item" :key="subComment.id">
+            <div class="comment-left">
+              <a-avatar :src="MINIO_URL + subComment.user.user_dynamic.avatar" alt="avatar" :size="30"/>
+            </div>
+            <div class="comment-right">
+              <span style="font-size: 16px;">{{ subComment.user.user_dynamic.name }}</span>
+              <span style="color: gray;margin-top: 2px;">发表于 {{ subComment.created_at }}</span>
+              <span style="font-size: 16px;margin-top: 5px;">
+                回复<a>@{{ commentID2Username[subComment.to_comment_id] }}</a>：{{ subComment.content }}
               </span>
-              <div v-if="replyInputVisible[subComment.comment_id]" class="reply-main-comment">
-                <a-textarea 
-                  :placeholder="'回复@' + subComment.username + '：'" 
-                  style="width: 100%;" 
-                  :auto-size="{ minRows: 1, maxRows: 3 }"
-                  v-model:value="subComment.replyContent"
-                />
-                <div class="reply-main-comment-controller">
-                  <a-button @click="() => { replyInputVisible[subComment.comment_id] = false }" style="margin-right: 10px;">取消</a-button>
-                  <a-button 
-                    type="primary" 
-                    @click="() => { relpySubComment(subComment.comment_id, subComment.replyContent); subComment.replyContent = '' }"
-                  >回复</a-button>
+              <!-- 回复子评论的输入框 -->
+              <div class="comment-right-controller">
+                <span 
+                  class="controller-interact" 
+                  @click="() => { replyInputVisible[subComment.id] = true }"
+                >
+                  <RollbackOutlined /> 回复
+                </span>
+                <div v-if="replyInputVisible[subComment.id]" class="reply-main-comment">
+                  <a-textarea 
+                    :placeholder="'回复@' + subComment.user.user_dynamic.name + '：'" 
+                    style="width: 100%;" 
+                    :auto-size="{ minRows: 1, maxRows: 3 }"
+                    v-model:value="subComment.replyContent"
+                  />
+                  <div class="reply-main-comment-controller">
+                    <a-button @click="() => { replyInputVisible[subComment.id] = false }" style="margin-right: 10px;">取消</a-button>
+                    <a-button 
+                      type="primary" 
+                      @click="() => { relpySubComment(subComment.id, subComment.replyContent); subComment.replyContent = '' }"
+                      :loading="replyButtonLoading[subComment.id]"
+                    >回复</a-button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </a-skeleton>
         <div class="sub-comment-contoller">
-          <a><PlusOutlined /> 加载更多</a>
-          <a class="hidden-comment" @click="() => { isShowSubComment = false }"><UpOutlined /> 隐藏评论</a>
+          <a-skeleton :loading="loadMoreLoading" :paragraph="{ rows: 3 }" :title="false" active>
+            <a v-if="hasMore" @click="loadMoreComments"><PlusOutlined/> 加载更多</a>
+            <a class="hidden-comment" @click="() => { isShowSubComment = false }"><UpOutlined /> 隐藏评论</a>
+          </a-skeleton>
         </div>
       </div>
       <a-divider/>
@@ -77,8 +87,12 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { MessageOutlined, RollbackOutlined, UpOutlined, PlusOutlined } from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
+
+import { getChildComments, createComment } from "@/http";
+import { useUserStore } from "@/stores";
 
 const props = defineProps({
   avatar: String,
@@ -88,58 +102,124 @@ const props = defineProps({
   replyCount: Number,
   isSubComment: Boolean,
   parentCommentId: Number,
+  commentType: {
+    type: String,
+    default: 'question'
+  },
+  targetID: {
+    type: Number,
+    default: null
+  }
 })
+const userStore = useUserStore()
+const MINIO_URL = import.meta.env.VITE_MINIO_URL
 const replyCount = ref(props.replyCount)
 const isShowSubComment = ref(false)
 const isShowReplyMainCommentInput = ref(false)
 const replyMainCommentContent = ref("")
-const subCommentList = ref([
-  {
-    avatar: "https://picsum.photos/800/600",
-    username: "Joe",
-    createdAt: "2021-01-01 09:32:32",
-    content: "This is a sub comment",
-    replyContent: "",
-    comment_id: props.parentCommentId + 1
-  },
-  {
-    avatar: "https://picsum.photos/800/600",
-    username: "Jack",
-    createdAt: "2034-01-01 21:32:11",
-    content: "是谁力扣第一题都做的磕磕巴巴，原来是我",
-    replyContent: "",
-    comment_id: props.parentCommentId + 2
-  }
-])
+const subCommentList = ref([])
+const size = 5
+const hasMore = ref(true)
+const loadMoreLoading = ref(false)
+const pullSubCommentLoading = ref(false)
+const relpyParentCommentLoading = ref(false)
+let nextCursor = null
+let commentID2Username = {}  // 存储评论的作者名字
+commentID2Username[props.parentCommentId] = props.username
 
 // 使用对象来跟踪每个子评论的回复输入框可见性
 const replyInputVisible = reactive({})
+// 使用对象来跟踪每个子评论的回复输入框回复按钮的加载状态
+const replyButtonLoading = reactive({})
 
-const relpyParentComment = () => {
-  subCommentList.value.unshift({
-    avatar: "https://picsum.photos/800/600",
-    username: "Joe",
-    createdAt: "2034-01-01 21:32:11",
-    content: replyMainCommentContent.value,
-    replyContent: "",
-    comment_id: props.parentCommentId + subCommentList.value.length + 1
-  })
+watch(isShowSubComment, async newValue => {
+  if (newValue && subCommentList.value.length === 0) {
+    pullSubCommentLoading.value = true
+    const response = await getChildComments(props.parentCommentId, nextCursor, size)
+    const responseData = response.data.data
+    const subComments = responseData.results
+    subComments.forEach(subComment => {
+      commentID2Username[subComment.id] = subComment.user.user_dynamic.name
+    });
+    subCommentList.value = responseData.results
+    nextCursor = responseData.cursor
+    hasMore.value = responseData.has_more
+    pullSubCommentLoading.value = false
+  }
+})
+
+const loadMoreComments = async () => {
+  loadMoreLoading.value = true
+  const response = await getChildComments(props.parentCommentId, nextCursor, size)
+  const responseData = response.data.data
+  const subComments = responseData.results
+  subComments.forEach(subComment => {
+    commentID2Username[subComment.id] = subComment.user.user_dynamic.name
+  });
+  const oldCommentList = subCommentList.value
+  subCommentList.value = [...oldCommentList, ...subComments]
+  nextCursor = responseData.cursor
+  hasMore.value = responseData.has_more
+  loadMoreLoading.value = false
+}
+const relpyParentComment = async () => {
+  relpyParentCommentLoading.value = true
+  const response = await createComment(
+    replyMainCommentContent.value, 
+    props.commentType, 
+    props.targetID, 
+    props.parentCommentId, 
+    props.parentCommentId
+  )
+  if (subCommentList.value.length !== 0) {
+    const responseData = response.data.data
+    subCommentList.value.unshift({
+      user: {
+        user_dynamic: {
+          name: userStore.user.name,
+          avatar: userStore.user.avatar
+        }
+      },
+      created_at: responseData.created_at,
+      content: replyMainCommentContent.value,
+      replyContent: "",
+      id: responseData.id,
+      to_comment_id: props.parentCommentId
+    })
+  }
+  message.success('回复成功！')
   replyCount.value++
   replyMainCommentContent.value = ''
   isShowSubComment.value = true
   isShowReplyMainCommentInput.value = false
+  relpyParentCommentLoading.value = false
 }
-const relpySubComment = (subCommentId, content) => {
+const relpySubComment = async (subCommentId, content) => {
+  replyButtonLoading[subCommentId] = true
+  const response = await createComment(
+    content, 
+    props.commentType, 
+    props.targetID, 
+    subCommentId, 
+    props.parentCommentId
+  )
+  const responseData = response.data.data
   subCommentList.value.push({
-    avatar: "https://picsum.photos/800/600",
-    username: "James",
-    createdAt: "2034-01-01 21:32:11",
+    user: {
+      user_dynamic: {
+        name: userStore.user.name,
+        avatar: userStore.user.avatar
+      }
+    },
+    created_at: responseData.created_at,
     content: content,
     replyContent: "",
-    comment_id: props.parentCommentId + subCommentList.value.length + 1
+    id: responseData.id,
+    to_comment_id: subCommentId
   })
   replyCount.value++
   replyInputVisible[subCommentId] = false
+  replyButtonLoading[subCommentId] = false
 }
 </script>
 

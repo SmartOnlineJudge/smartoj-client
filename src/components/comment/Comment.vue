@@ -2,7 +2,9 @@
   <div id="comment">
     <div class="new-comment">
       <div class="comment-title">
-        <span class="comment-statistics"> <CommentOutlined /> 评论 · 4242</span>
+        <a-skeleton :loading="pullCommentLoading" :paragraph="{ rows: 1 }" :title="false" active>
+          <span class="comment-statistics"> <CommentOutlined /> 评论 · {{ commentTotal }}</span>
+        </a-skeleton>
       </div>
       <div class="input-comment">
         <div class="input-comment-box" :class="{ 'focused': isFocused }">
@@ -22,93 +24,118 @@
               type="primary" 
               style="margin-left: auto;" 
               :disabled="inputComment.length === 0"
-              @click="createComment"
+              @click="createCommentHandler"
+              :loading="publishCommentLoading"
             >发布</a-button>
           </div>
         </div>
       </div>
     </div>
     <div class="comment-list">
-      <CommentItem
-        v-for="comment in commentList"
-        :key="comment.comment_id"
-        :avatar="comment.avatar"
-        :username="comment.username"
-        :created-at="comment.createdAt"
-        :content="comment.content"
-        :reply-count="comment.replyCount"
-        :parent-comment-id="comment.comment_id"
-      />
-      <div>
-        <a-pagination 
-          v-model:current="currentPage" 
-          :total="50" 
-          show-less-items
-        />
-      </div>
+      <a-skeleton :loading="pullCommentLoading" :paragraph="{ rows: 7 }" :title="false" active>
+        <div v-if="commentList.length > 0">
+          <a-skeleton :loading="paginationLoading" :paragraph="{ rows: 5 }" :title="false" active>
+            <CommentItem
+              v-for="comment in commentList"
+              :key="comment.id"
+              :avatar="MINIO_URL + comment.user.user_dynamic.avatar"
+              :username="comment.user.user_dynamic.name"
+              :created-at="comment.created_at"
+              :content="comment.content"
+              :reply-count="comment.reply_count"
+              :parent-comment-id="comment.id"
+              :comment-type="props.commentType"
+              :targetID="props.targetID"
+            />
+          </a-skeleton>
+          <a-pagination 
+            v-model:current="currentPage"
+            :page-size="pageSize"
+            :total="pageTotal" 
+            show-less-items
+            @change="pageChangeHandler"
+          />
+        </div>
+        <a-empty v-else/>
+      </a-skeleton>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { CommentOutlined } from "@ant-design/icons-vue";
+import { message } from 'ant-design-vue';
 
 import CommentItem from './CommentItem.vue';
+import { getRootComments, createComment, getCommentCount } from '@/http';
+import { useUserStore } from '@/stores';
 
+const props = defineProps({
+  commentType: {
+    type: String,
+    default: 'question'
+  },
+  targetID: {
+    type: Number,
+    default: null
+  }
+})
+const userStore = useUserStore()
 const MINIO_URL = import.meta.env.VITE_MINIO_URL
 const inputComment = ref('');
 const inputMaxLength = 200
 const isFocused = ref(false)
 const currentPage = ref(1)
+const pageTotal = ref(0)
+const commentTotal = ref(0)
+const pageSize = 5
+const commentList = ref([])
+const publishCommentLoading = ref(false)
+const pullCommentLoading = ref(false)
+const paginationLoading = ref(false)
 
-const commentList = ref([
-  {
-    avatar: MINIO_URL + '/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg',
-    username: '先杀我队友',
-    createdAt: '2025-11-30 13:56:12',
-    content: '因为没刷过贪心的题，',
-    replyCount: 235,
-    comment_id: 1
-  },
-  {
-    avatar: 'https://picsum.photos/800/600',
-    username: 'Miku01',
-    createdAt: '2025-11-30 11:06:45',
-    content: '刚刚学学长说来力扣刷题，第一题我就看不懂了',
-    replyCount: 12,
-    comment_id: 2
-  },
-  {
-    avatar: MINIO_URL + '/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg',
-    username: '先杀我队友',
-    createdAt: '2025-11-30 13:56:12',
-    content: '因为没刷过贪心的题，',
-    replyCount: 235,
-    comment_id: 3
-  },
-  {
-    avatar: 'https://picsum.photos/800/600',
-    username: 'Miku01',
-    createdAt: '2025-11-30 11:06:45',
-    content: '刚刚学学长说来力扣刷题，第一题我就看不懂了',
-    replyCount: 12,
-    comment_id: 4
-  }
-])
-
-const createComment = () => {
-  commentList.value.unshift({
-    avatar: 'https://picsum.photos/800/600',
-    username: 'Miku01',
-    createdAt: '2025-11-30 11:06:45',
-    content: inputComment.value,
-    replyCount: 0,
-    comment_id: commentList.value.length + 1
-  })
-  inputComment.value = ''
+onMounted(async () => {
+  pullCommentLoading.value = true
+  const tasks = Promise.all([
+    getCommentCount(props.targetID, props.commentType),
+    getRootComments(props.targetID, props.commentType, 1, pageSize)
+  ])
+  const [commentTotalResponse, commentListResponse] = await tasks;
+  const responseData = commentListResponse.data.data;
+  commentList.value = responseData.results;
+  pageTotal.value = responseData.total;
+  pullCommentLoading.value = false
+  commentTotal.value = commentTotalResponse.data.data.count;
+})
+const pageChangeHandler = async page => {
+  paginationLoading.value = true
+  const response = await getRootComments(props.targetID, props.commentType, page, pageSize)
+  const responseData = response.data.data;
+  commentList.value = responseData.results;
+  paginationLoading.value = false
 }
-
+const createCommentHandler = async () => {
+  publishCommentLoading.value = true
+  const response = await createComment(inputComment.value, props.commentType, props.targetID)
+  const responseData = response.data.data;
+  message.success('评论成功！')
+  commentList.value.unshift({
+    id: responseData.id,
+    content: inputComment.value,
+    user: {
+      user_dynamic: {
+        name: userStore.user.name,
+        avatar: userStore.user.avatar
+      }
+    },
+    created_at: responseData.created_at,
+    reply_count: 0
+  })
+  commentTotal.value += 1
+  inputComment.value = ''
+  publishCommentLoading.value = false
+}
 </script>
 
 <style scoped> 

@@ -5,31 +5,42 @@
         <a-button type="dashed" style="width: 100%;" @click="createSolution"><PlusCircleTwoTone />创建题解</a-button>
       </div>
       <div class="solution-area">
-        <div v-for="solution in solutionData" class="solution" @click="() => { openSoultion(solution.id) }">
-          <div class="solution-left">
-            <a-avatar :src="MINIO_URL + solution.avatar" alt="avatar" :size="35"/>
-          </div>
-          <div class="solution-right">
-            <span class="username">{{ solution.username }}</span>
-            <span class="solution-title">{{ solution.title }}</span>
-            <span class="solution-partial-content">{{ solution.content }}</span>
-            <div class="relative-info">
-              <div class="statistics">
-                <a-tooltip>
-                  <template #title>浏览数量</template>
-                  <span><EyeOutlined /> {{ solution.views }}</span>
-                </a-tooltip>
-                <a-tooltip>
-                  <template #title>评论数量</template>
-                  <span style="margin-left: 15px;"><CommentOutlined /> {{ solution.comments }}</span>
-                </a-tooltip>
-              </div>
-              <span style="margin-left: auto;margin-right: 15px;">{{ solution.created_at }}</span>
+        <a-skeleton :loading="getSolutionListLoading" :paragraph="{ rows: 8 }" :title="false" active>
+          <div 
+            v-for="solution in solutionList"
+            :key="solution.id"
+            class="solution" 
+            @click="() => { openSoultion(solution.id) }"
+          >
+            <div class="solution-left">
+              <a-avatar :src="MINIO_URL + solution.user.user_dynamic.avatar" alt="avatar" :size="35"/>
             </div>
-            <a-divider/>
+            <div class="solution-right">
+              <span class="username">{{ solution.user.user_dynamic.name }}</span>
+              <span class="solution-title">{{ solution.title }}</span>
+              <span class="solution-partial-content">{{ solution.content }}</span>
+              <div class="relative-info">
+                <div class="statistics">
+                  <a-tooltip>
+                    <template #title>浏览数量</template>
+                    <span><EyeOutlined /> {{ solution.view_count }}</span>
+                  </a-tooltip>
+                  <a-tooltip>
+                    <template #title>评论数量</template>
+                    <span style="margin-left: 15px;"><CommentOutlined /> {{ solution.comment_count }}</span>
+                  </a-tooltip>
+                </div>
+                <span style="margin-left: auto;margin-right: 15px;">{{ solution.created_at }}</span>
+              </div>
+              <a-divider/>
+            </div>
           </div>
-        </div>
-        <div class="load-more-solution" @click="loadMoreSolutions"><a-button>加载更多</a-button></div>
+          <div v-if="hasMore" class="load-more-solution" @click="loadMoreSolutions">
+            <a-skeleton :loading="loadMoreLoading" :paragraph="{ rows: 2 }" :title="false" active>
+              <a-button>加载更多</a-button>
+            </a-skeleton>
+          </div>
+        </a-skeleton>
       </div>
     </div>
     <div class="solution-detail">
@@ -46,33 +57,35 @@
         <template #closeIcon>
           <ArrowLeftOutlined />
         </template>
-        <div class="solution-detail-content">
-          <div><h2 class="detail-title">第一题，让我来闲扯一下</h2></div>
-          <div class="solution-detail-header">
-            <div class="detail-user-avatar">
-              <a-avatar :src="MINIO_URL + '/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg'" alt="avatar" :size="40"/>
-            </div>
-            <div class="detail-statistics-box">
-              <div><span class="detail-username">先杀我队友</span></div>
-              <div class="detail-statistics">
-                <span><EyeOutlined /> 6747</span>
-                <span style="margin-left: 10px;"><CalendarOutlined /> 2025-11-30 14:03:45</span>
+        <a-skeleton :loading="getSolutionLoading" :paragraph="{ rows: 20 }" :title="false" active>
+          <div v-if="currentSolution" class="solution-detail-content">
+            <div><h2 class="detail-title">{{ currentSolution.title }}</h2></div>
+            <div class="solution-detail-header">
+              <div class="detail-user-avatar">
+                <a-avatar :src="MINIO_URL + currentSolution.user.user_dynamic.avatar" alt="avatar" :size="40"/>
+              </div>
+              <div class="detail-statistics-box">
+                <div><span class="detail-username">{{ currentSolution.user.user_dynamic.name }}</span></div>
+                <div class="detail-statistics">
+                  <span><EyeOutlined /> {{ currentSolution.view_count }}</span>
+                  <span style="margin-left: 10px;"><CalendarOutlined /> {{ currentSolution.created_at }}</span>
+                </div>
               </div>
             </div>
+            <div class="detail-markdown-content">
+              <v-md-editor v-model="currentSolution.content" mode="preview"/>
+            </div>
+            <a-divider/>
+            <Comment comment-type="solution" :targetID="currentSolution.id"/>
           </div>
-          <div class="detail-markdown-content">
-            <v-md-editor v-model="solutionMarkdownContent" mode="preview"/>
-          </div>
-          <a-divider/>
-          <Comment/>
-        </div>
+        </a-skeleton>
       </a-drawer>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { 
   PlusCircleTwoTone, 
   EyeOutlined, 
@@ -83,121 +96,50 @@ import {
 
 import Comment from "@/components/comment/Comment.vue";
 import { useQuestionStore } from "@/stores";
+import { getSolutionList, getSolution } from "@/http";
 
 const questionStore = useQuestionStore();
+const questionID = questionStore.question.id;
 const MINIO_URL = import.meta.env.VITE_MINIO_URL
 const shouldOpenSolution = ref(false);
-const solutionData = ref([
-  {
-    id: 1,
-    username: "张胜男",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 456,
-    comments: 878
-  },
-  {
-    id: 2,
-    username: "李四",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 378,
-    comments: 324
-  },
-  {
-    id: 3,
-    username: "王麻子",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 7853,
-    comments: 234
-  },
-  {
-    id: 4,
-    username: "先杀我队友",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 456,
-    comments: 187
-  },
-  {
-    id: 5,
-    username: "Rainbow",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 456,
-    comments: 234
-  }
-])
-const solutionMarkdownContent = ref("### 1111")
+const solutionList = ref([])
+const currentSolution = ref(null)
+const getSolutionLoading = ref(false);
+const getSolutionListLoading = ref(false);
+const loadMoreLoading = ref(false);
+const hasMore = ref(true);
+const size = 5
+let nextCursor = null;
 
-const openSoultion = solutionID => {
+onMounted(async () => {
+  getSolutionListLoading.value = true
+  const response = await getSolutionList(questionID, null, size)
+  const responseData = response.data.data
+  solutionList.value = responseData.results
+  hasMore.value = responseData.has_more
+  nextCursor = responseData.cursor
+  getSolutionListLoading.value = false
+})
+
+const openSoultion = async solutionID => {
+  getSolutionLoading.value = true
   shouldOpenSolution.value = true;
+  const response = await getSolution(solutionID)
+  currentSolution.value = response.data.data
+  getSolutionLoading.value = false
 }
-const loadMoreSolutions = () => {
-  solutionData.value.push({
-    id: 6,
-    username: "唐大帅哥",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 456,
-    comments: 234
-  },
-  {
-    id: 7,
-    username: "刘昊然",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 456,
-    comments: 234
-  },
-  {
-    id: 8,
-    username: "刘浩存",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 456,
-    comments: 234
-  },
-  {
-    id: 9,
-    username: "王楚然",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 456,
-    comments: 234
-  },
-  {
-    id: 10,
-    username: "张若楠",
-    avatar: "/user-avatars/sOFQK2CZGNfIQVa6hgFKngTM8jp5u53h.jpg",
-    title: "第一题，让我来闲扯一下",
-    content: "标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。标记了一个（或封装一组）操作命令，响应用户点击行为，触发相应的业务逻辑。",
-    created_at: "2025-11-30 14:03:45",
-    views: 456,
-    comments: 234
-  })
+const loadMoreSolutions = async () => {
+  loadMoreLoading.value = true
+  const response = await getSolutionList(questionID, nextCursor, size)
+  const responseData = response.data.data
+  hasMore.value = responseData.has_more
+  nextCursor = responseData.cursor
+  const oldSolutionList = solutionList.value
+  solutionList.value = [...oldSolutionList, ...responseData.results]
+  loadMoreLoading.value = false
 }
 const createSolution = () => {
-  window.open('/create-solution/' + questionStore.question.id)
+  window.open('/create-solution/' + questionID)
 }
 </script>
 
