@@ -170,13 +170,43 @@ export const getSolutionList = (questionID, cursor, size) => {
   )
 }
 
-export const getSolution = (solutionID) => {
+export const getSolution = (solutionID, questionID) => {
   return requests.get(
     '/solution',
     {
       params: {
-        solution_id: solutionID
+        solution_id: solutionID,
+        question_id: questionID
       }
     }
+  )
+}
+
+export const updateSolution = (solutionID, content, title) => {
+  return requests.put(
+    '/solution',
+    {
+      solution_id: solutionID,
+      content: content,
+      title: title
+    }
+  )
+}
+
+export const createSolution = (questionID, content, title) => {
+  return requests.post(
+    '/solution',
+    {
+      question_id: questionID,
+      content: content,
+      title: title
+    }
+  )
+}
+
+export const getUploadImagePresignedUrl = fileTypeSuffix => {
+  return requests.post(
+    '/solution/upload-image/signature',
+    { file_type_suffix: fileTypeSuffix }
   )
 }
