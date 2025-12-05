@@ -7,7 +7,7 @@
         </a-skeleton>
       </div>
       <div class="input-comment">
-        <div class="input-comment-box" :class="{ 'focused': isFocused }">
+        <div v-if="userStore.isLogin" class="input-comment-box" :class="{ 'focused': isFocused }">
           <a-textarea 
             :auto-size="{ minRows: 3, maxRows: 6 }"
             v-model:value="inputComment"

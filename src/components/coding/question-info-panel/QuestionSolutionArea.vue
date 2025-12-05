@@ -1,7 +1,7 @@
 <template>
   <div id="question-solution-area">
     <div class="solution-list" :hidden="shouldOpenSolution">
-      <div class="create-solution">
+      <div v-if="userStore.isLogin" class="create-solution">
         <a-button type="dashed" style="width: 100%;" @click="createSolution"><PlusCircleTwoTone />创建题解</a-button>
       </div>
       <div class="solution-area">
@@ -95,9 +95,10 @@ import {
 } from "@ant-design/icons-vue";
 
 import Comment from "@/components/comment/Comment.vue";
-import { useQuestionStore } from "@/stores";
+import { useQuestionStore, useUserStore } from "@/stores";
 import { getSolutionList, getSolution } from "@/http";
 
+const userStore = useUserStore();
 const questionStore = useQuestionStore();
 const questionID = questionStore.question.id;
 const MINIO_URL = import.meta.env.VITE_MINIO_URL
@@ -157,6 +158,7 @@ const createSolution = () => {
   padding: 20px;
 }
 .solution-area {
+  margin-top: 10px;
   padding: 0 5px;
   overflow-x: hidden; /* 隐藏横向滚动条 */
 }

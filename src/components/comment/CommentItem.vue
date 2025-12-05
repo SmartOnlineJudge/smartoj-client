@@ -16,7 +16,7 @@
         >
           <MessageOutlined /> {{ isShowSubComment ? '隐藏评论' : '共 ' + replyCount + ' 条回复' }}
         </span>
-        <span class="controller-interact" @click="() => { isShowReplyMainCommentInput = true }">
+        <span v-if="userStore.isLogin" class="controller-interact" @click="() => { isShowReplyMainCommentInput = true }">
           <RollbackOutlined /> 回复
         </span>
         <!-- 回复父评论的输入框 -->
@@ -47,7 +47,7 @@
                 回复<a>@{{ commentID2Username[subComment.to_comment_id] }}</a>：{{ subComment.content }}
               </span>
               <!-- 回复子评论的输入框 -->
-              <div class="comment-right-controller">
+              <div v-if="userStore.isLogin" class="comment-right-controller">
                 <span 
                   class="controller-interact" 
                   @click="() => { replyInputVisible[subComment.id] = true }"
