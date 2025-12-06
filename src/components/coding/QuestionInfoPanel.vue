@@ -1,10 +1,10 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import { 
-  ProfileTwoTone, 
-  MessageTwoTone, 
-  ExperimentTwoTone,
-  PieChartTwoTone,
+  ProfileOutlined, 
+  MessageOutlined, 
+  ExperimentOutlined,
+  PieChartOutlined,
   FileTextTwoTone
 } from '@ant-design/icons-vue';
 import { useQuestionStore, useUserStore } from '@/stores';
@@ -44,19 +44,19 @@ watch(() => questionStore.requireJumpToSolvingHistory, () => {
     <div class="question-info-panel-title">
       <a-radio-group v-model:value="radioValue" button-style="solid">
         <a-radio-button value="description">
-          <ProfileTwoTone />
+          <ProfileOutlined />
           题目描述
         </a-radio-button>
         <a-radio-button value="communication">
-          <MessageTwoTone />
+          <MessageOutlined />
           评论区
         </a-radio-button>
         <a-radio-button value="solution">
-          <ExperimentTwoTone />
+          <ExperimentOutlined />
           题解区
         </a-radio-button>
         <a-radio-button v-if="userStore.isLogin" value="submitRecord">
-          <PieChartTwoTone />
+          <PieChartOutlined />
           提交记录
         </a-radio-button>
       </a-radio-group>

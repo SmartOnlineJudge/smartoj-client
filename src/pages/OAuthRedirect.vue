@@ -32,7 +32,7 @@ const oAuth2Login = () => {
       redirectURL = '/user/user-center'
       requestAndUpdateUser().then(() => {})
     } else {
-      message.success('登录失败，请重新尝试')
+      message.error('登录失败，请重新尝试')
       redirectURL = '/login'
     }
   }).catch(() => {
