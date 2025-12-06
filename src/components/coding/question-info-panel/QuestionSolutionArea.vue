@@ -6,40 +6,43 @@
       </div>
       <div class="solution-area">
         <a-skeleton :loading="getSolutionListLoading" :paragraph="{ rows: 8 }" :title="false" active>
-          <div 
-            v-for="solution in solutionList"
-            :key="solution.id"
-            class="solution" 
-            @click="() => { openSoultion(solution.id) }"
-          >
-            <div class="solution-left">
-              <a-avatar :src="MINIO_URL + solution.user.user_dynamic.avatar" alt="avatar" :size="35"/>
-            </div>
-            <div class="solution-right">
-              <span class="username">{{ solution.user.user_dynamic.name }}</span>
-              <span class="solution-title">{{ solution.title }}</span>
-              <span class="solution-partial-content">{{ solution.content }}</span>
-              <div class="relative-info">
-                <div class="statistics">
-                  <a-tooltip>
-                    <template #title>浏览数量</template>
-                    <span><EyeOutlined /> {{ solution.view_count }}</span>
-                  </a-tooltip>
-                  <a-tooltip>
-                    <template #title>评论数量</template>
-                    <span style="margin-left: 15px;"><CommentOutlined /> {{ solution.comment_count }}</span>
-                  </a-tooltip>
-                </div>
-                <span style="margin-left: auto;margin-right: 15px;">{{ solution.created_at }}</span>
+          <div v-if="solutionList.length > 0">
+            <div 
+              v-for="solution in solutionList"
+              :key="solution.id"
+              class="solution" 
+              @click="() => { openSoultion(solution.id) }"
+            >
+              <div class="solution-left">
+                <a-avatar :src="MINIO_URL + solution.user.user_dynamic.avatar" alt="avatar" :size="35"/>
               </div>
-              <a-divider/>
+              <div class="solution-right">
+                <span class="username">{{ solution.user.user_dynamic.name }}</span>
+                <span class="solution-title">{{ solution.title }}</span>
+                <span class="solution-partial-content">{{ solution.content }}</span>
+                <div class="relative-info">
+                  <div class="statistics">
+                    <a-tooltip>
+                      <template #title>浏览数量</template>
+                      <span><EyeOutlined /> {{ solution.view_count }}</span>
+                    </a-tooltip>
+                    <a-tooltip>
+                      <template #title>评论数量</template>
+                      <span style="margin-left: 15px;"><CommentOutlined /> {{ solution.comment_count }}</span>
+                    </a-tooltip>
+                  </div>
+                  <span style="margin-left: auto;margin-right: 15px;">{{ solution.created_at }}</span>
+                </div>
+                <a-divider/>
+              </div>
+            </div>
+            <div v-if="hasMore" class="load-more-solution" @click="loadMoreSolutions">
+              <a-skeleton :loading="loadMoreLoading" :paragraph="{ rows: 2 }" :title="false" active>
+                <a-button>加载更多</a-button>
+              </a-skeleton>
             </div>
           </div>
-          <div v-if="hasMore" class="load-more-solution" @click="loadMoreSolutions">
-            <a-skeleton :loading="loadMoreLoading" :paragraph="{ rows: 2 }" :title="false" active>
-              <a-button>加载更多</a-button>
-            </a-skeleton>
-          </div>
+          <a-empty v-else/>
         </a-skeleton>
       </div>
     </div>
