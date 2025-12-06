@@ -226,3 +226,19 @@ export const getUserSolutions = (page, size) => {
 export const deleteSolution = solutionID => {
   return requests.delete('/solution', {data: { solution_id: solutionID }})
 }
+
+export const getUserComments = (page, size) => {
+  return requests.get(
+    '/comment/user/list',
+    {
+      params: {
+        page: page,
+        size: size
+      }
+    }
+  )
+}
+
+export const deleteComment = commentID => {
+  return requests.delete('/comment', {data: { comment_id: commentID }})
+}
