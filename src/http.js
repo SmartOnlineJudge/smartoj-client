@@ -210,3 +210,19 @@ export const getUploadImagePresignedUrl = fileTypeSuffix => {
     { file_type_suffix: fileTypeSuffix }
   )
 }
+
+export const getUserSolutions = (page, size) => {
+  return requests.get(
+    '/solution/user/list',
+    {
+      params: {
+        page: page,
+        size: size
+      }
+    }
+  )
+}
+
+export const deleteSolution = solutionID => {
+  return requests.delete('/solution', {data: { solution_id: solutionID }})
+}
