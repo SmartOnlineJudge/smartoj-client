@@ -217,6 +217,7 @@ const relpySubComment = async (subCommentId, content) => {
     id: responseData.id,
     to_comment_id: subCommentId
   })
+  message.success('回复成功！')
   replyCount.value++
   replyInputVisible[subCommentId] = false
   replyButtonLoading[subCommentId] = false

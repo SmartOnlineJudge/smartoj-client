@@ -242,3 +242,23 @@ export const getUserComments = (page, size) => {
 export const deleteComment = commentID => {
   return requests.delete('/comment', {data: { comment_id: commentID }})
 }
+
+export const getUserMessageCount = () => {
+  return requests.get('/message/user-message-count')
+}
+
+export const getUserMessages = (page, size) => {
+  return requests.get(
+    '/message/user-messages',
+    {
+      params: {
+        page: page,
+        size: size
+      }
+    }
+  )
+}
+
+export const setMessageAsRead = messageID => {
+  return requests.patch('/message', {message_id: messageID})
+}

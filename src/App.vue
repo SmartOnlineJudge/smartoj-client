@@ -15,7 +15,6 @@
       >
         <a-menu-item key="/">首页</a-menu-item>
         <a-menu-item key="/questions">题库</a-menu-item>
-        <!-- <a-menu-item key="/coding">在线刷题</a-menu-item> -->
         <a-menu-item key="/about">关于我们</a-menu-item>
       </a-menu>
       <div class="more">
@@ -33,7 +32,7 @@
               <template #title>
                 <span>我的消息</span>
               </template>
-              <a-badge count="5" size="small">
+              <a-badge :count="messageCount" size="small">
                 <BellOutlined style="font-size: 16px"/>
               </a-badge>
             </a-tooltip>
@@ -118,14 +117,21 @@ import {
 import { RouterView } from "vue-router";
 import router from "@/router/index.js";
 import { useUserStore } from "@/stores.js";
-import { userLogout } from "@/http.js";
+import { userLogout, getUserMessageCount } from "@/http.js";
 import { requestAndUpdateUser } from "@/utils.js";
 
 const userStore = useUserStore();
 const MINIO_URL = import.meta.env.VITE_MINIO_URL
 const searchContent = ref('');
+const messageCount = ref(0);
 
-onBeforeMount(requestAndUpdateUser)
+onBeforeMount(async () => {
+  await requestAndUpdateUser()
+  if (userStore.isLogin) {
+    const response = await getUserMessageCount()
+    messageCount.value = response.data.data.total
+  }
+})
 
 const logout = async () => {
   Modal.confirm({
