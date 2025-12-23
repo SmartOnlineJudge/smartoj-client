@@ -7,10 +7,9 @@ import VueMarkdownEditor from '@kangc/v-md-editor';
 import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
 import '@kangc/v-md-editor/lib/theme/style/github.css';
 import hljs from 'highlight.js';
+import createKatexPlugin from '@kangc/v-md-editor/lib/plugins/katex/cdn';
 
-VueMarkdownEditor.use(githubTheme, {
-  Hljs: hljs,
-});
+VueMarkdownEditor.use(githubTheme, { Hljs: hljs } ).use(createKatexPlugin())
 
 // Monaco 配置
 self.MonacoEnvironment = {

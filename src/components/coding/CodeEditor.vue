@@ -17,6 +17,7 @@ import router from "@/router/index";
 
 const questionStore = useQuestionStore();
 const userStore = useUserStore();
+const openSolvingAssistant = defineModel("openSolvingAssistant")
 
 const currentLanguage = ref("python");
 const theme = ref("vs");
@@ -43,6 +44,10 @@ const validLanguages = ref([])
 const solvingFrameworks = ref({})
 // 当前正在使用的解题框架
 const solvingFramework = ref("");
+
+watch(solvingFramework, newValue => {
+  questionStore.setCode(newValue)
+})
 
 onMounted(() => {
   watch(() => questionStore.question, () => {
@@ -127,6 +132,16 @@ const submit = async judgeType => {
       <div v-if="userStore.isLogin" class="submit-test-button">
         <a-button 
           type="default" 
+          @click="() => { openSolvingAssistant = !openSolvingAssistant }"
+          style="margin-right: 10px;display: flex;align-items: center;"
+        >
+          <template #icon>
+            <img src="/favicon.svg" alt="favicon" width="20" style="margin-right: 5px;">
+          </template>
+          智能刷题助手
+        </a-button>
+        <a-button 
+          type="default" 
           @click="() => { submit('test') }"
           :loading="testButtonLoading"
           :disabled="testButtonDisabled"
@@ -155,7 +170,7 @@ const submit = async judgeType => {
     </div>
     <a-divider style="margin: 0 0 20px 0;"/>
     <div style="margin-top: 10px;">
-      <a-skeleton :loading="skeletonLoading" :paragraph="{ rows: 10 }" :title="false" active style="padding: 10px;">
+      <a-skeleton :loading="skeletonLoading" :paragraph="{ rows: 10 }" :title="false" active>
         <MonacoEditor
           v-model:code="solvingFramework"
           v-model:language="currentLanguage"
@@ -176,5 +191,7 @@ const submit = async judgeType => {
 
 .submit-test-button {
   margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 </style>

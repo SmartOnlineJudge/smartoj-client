@@ -28,8 +28,7 @@ onMounted(() => {
     fontSize: props.fontSize,
     minimap: { enabled: false },
     scrollbar: {
-      vertical: 'hidden',
-      horizontal: 'hidden'
+      vertical: 'hidden'
     },
     readOnly: props.readOnly || false,
   });

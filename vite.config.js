@@ -37,6 +37,12 @@ export default defineConfig(({ command, mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
+        "/ai-service": {
+          target: env.VITE_AI_SERVICE_BACKEND_URL,
+          secure: false,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/ai-service/, ''),
+        }
       },
     },
   };

@@ -22,8 +22,8 @@ onMounted(() => {
   })
 })
 
-// 左侧宽度百分比，默认40%
-const leftWidth = ref(40)
+// 左侧宽度百分比，默认35%
+const leftWidth = ref(35)
 const isDragging = ref(false)
 
 // 开始拖拽
@@ -109,7 +109,6 @@ const stopDrag = () => {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 2px;
   height: 100%;
   transition: background-color 0.3s;
 }

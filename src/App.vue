@@ -18,14 +18,6 @@
         <a-menu-item key="/about">关于我们</a-menu-item>
       </a-menu>
       <div class="more">
-        <div class="search-bar">
-          <a-input-search
-              placeholder="全站搜索"
-              v-model:value="searchContent"
-              @search="onSearch"
-              enter-button
-          />
-        </div>
         <div v-if="userStore.isLogin" class="bell">
           <a href="#" @click="() => { router.push('/user/my-message') }">
             <a-tooltip placement="bottom">
@@ -122,7 +114,6 @@ import { requestAndUpdateUser } from "@/utils.js";
 
 const userStore = useUserStore();
 const MINIO_URL = import.meta.env.VITE_MINIO_URL
-const searchContent = ref('');
 const messageCount = ref(0);
 
 onBeforeMount(async () => {
@@ -146,10 +137,6 @@ const logout = async () => {
     okText: '确认',
     cancelText: '取消',
   })
-}
-
-const onSearch = v => {
-  console.log(v);
 }
 </script>
 
@@ -175,11 +162,6 @@ const onSearch = v => {
 .more {
   margin-left: auto;
   display: flex;
-}
-.more .search-bar {
-  display: flex;
-  align-items: center;
-  margin-right: 20px
 }
 .more .bell {
   margin-right: 12px;

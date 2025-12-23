@@ -6,6 +6,12 @@ export const requests = axios.create({
   timeout: 1000 * 10,
 })
 
+export const aiRequests = axios.create({
+  baseURL: '/ai-service',
+  withCredentials: true,
+  timeout: 1000 * 10,
+})
+
 
 export const getCurrentUser = () => {
   return requests.get("/user")
@@ -261,4 +267,21 @@ export const getUserMessages = (page, size) => {
 
 export const setMessageAsRead = messageID => {
   return requests.patch('/message', {message_id: messageID})
+}
+
+export const chatWithSolvingAssistantAgent = (query, threadID, questionID, questionDescription, code) => {
+    const data = { query, question_id: questionID, question_description: questionDescription, code }
+    if (threadID && threadID !== "") data["thread_id"] = threadID;
+    return aiRequests.post('/chat/solving-assistant', data)
+}
+
+export const interruptConversation = threadID => {
+    return aiRequests.post("/chat/interrupt", { thread_id: threadID })
+}
+
+export const getConversationDetail = questionID => {
+    return aiRequests.get(
+        "/conversation/detail/solving-assistant", 
+        { params: { question_id: questionID } }
+    )
 }
