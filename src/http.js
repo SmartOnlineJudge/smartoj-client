@@ -285,3 +285,7 @@ export const getConversationDetail = questionID => {
         { params: { question_id: questionID } }
     )
 }
+
+export const getRecommendedQuestions = () => {
+  return requests.get('/recommendation/questions')
+}
