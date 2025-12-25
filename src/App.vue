@@ -13,8 +13,7 @@
           :style="{ lineHeight: '64px', marginLeft: '17px', fontSize: '15px', fontWeight: 'bold' }"
           @click="item => { router.push(item.key) }"
       >
-        <a-menu-item key="/">首页</a-menu-item>
-        <a-menu-item key="/questions">题库</a-menu-item>
+        <a-menu-item key="/">题库</a-menu-item>
         <a-menu-item key="/about">关于我们</a-menu-item>
       </a-menu>
       <div class="more">
@@ -58,12 +57,6 @@
                     <span>账号管理</span>
                   </span>
                 </a-menu-item>
-                <a-menu-item key="/user/new-question">
-                  <span>
-                    <CodeOutlined />
-                    <span>创建题目</span>
-                  </span>
-                </a-menu-item>
                 <a-menu-item key="/user/my-message">
                   <span>
                     <BellOutlined />
@@ -87,12 +80,6 @@
     <a-layout-content>
       <router-view/>
     </a-layout-content>
-
-    <!-- 底部内容 -->
-    <a-layout-footer v-if="router.currentRoute.value.path === '/'" style="text-align: center">
-      <span>2025 智能算法刷题平台 桂ICP备8888888-1号</span>
-    </a-layout-footer>
-
   </a-layout>
 </template>
 
@@ -103,8 +90,7 @@ import {
   BellOutlined,
   IdcardOutlined,
   LogoutOutlined,
-  UserOutlined,
-  CodeOutlined
+  UserOutlined
 } from "@ant-design/icons-vue";
 import { RouterView } from "vue-router";
 import router from "@/router/index.js";
