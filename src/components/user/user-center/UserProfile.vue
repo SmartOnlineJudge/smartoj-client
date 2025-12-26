@@ -124,7 +124,7 @@ onMounted(async () => {
   margin: 0 5px;
 }
 .stat-value {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   color: #1890ff;
 }

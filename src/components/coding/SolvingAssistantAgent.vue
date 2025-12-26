@@ -39,11 +39,16 @@
 <script setup>
 import { ref, watch, nextTick, h } from 'vue';
 import { Sender, BubbleList } from 'ant-design-x-vue';
-import { Avatar, Collapse, CollapsePanel, message } from 'ant-design-vue';
+import { Avatar, Collapse, CollapsePanel, message, notification } from 'ant-design-vue';
 import VueMarkdownEditor, { xss } from '@kangc/v-md-editor';
 
 import { useUserStore, useQuestionStore } from '@/stores';
-import { chatWithSolvingAssistantAgent, getConversationDetail, interruptConversation } from '@/http';
+import { 
+  chatWithSolvingAssistantAgent, 
+  getConversationDetail, 
+  interruptConversation,
+  createOrUpdateMemory
+} from '@/http';
 
 
 const userStore = useUserStore();
@@ -251,6 +256,7 @@ watch(() => props.isOpenChat, async () => {
 // 聊天输入框相关代码
 const loading = ref(false);
 const inputValue = ref('');
+const chatRounds = ref(0);  // 聊天轮数
 const askAgent = async query => {
   try {
     const threadIDResponse = await chatWithSolvingAssistantAgent(
@@ -332,11 +338,30 @@ const submitHandler = async () => {
     content: []
   })
   await askAgent(query)
+  chatRounds.value++
 };
 const cancelHandler = async () => {
   await interruptConversation(currentThreadID.value);
   loading.value = false;
 };
+watch(chatRounds, async () => {
+  if (chatRounds.value >= 4 && chatRounds.value % 4 === 0) {
+    const response = await createOrUpdateMemory(currentThreadID.value);
+    const responseData = response.data.data;
+    let notificationMessage = ""
+    if (responseData.created > 0) {
+      notificationMessage += `${responseData.created}条记忆被创建！`
+    }
+    if (responseData.updated > 0) {
+      notificationMessage += `${responseData.updated}条记忆被更新！`
+    }
+    notificationMessage += "可前往个人主页查看记忆详情"
+    notification.success({
+      message: "记忆更新成功",
+      description: notificationMessage
+    });
+  }
+})
 </script>
 
 <style scoped>

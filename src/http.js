@@ -293,3 +293,15 @@ export const getRecommendedQuestions = () => {
 export const getUserProfile = () => {
   return requests.get('/recommendation/user-profile')
 }
+
+export const getMemoryList = () => {
+  return aiRequests.get('/memory/list')
+}
+
+export const deleteMemory = memoryID => {
+  return aiRequests.delete('/memory', { data: { memory_id: memoryID } })
+}
+
+export const createOrUpdateMemory = (threadID) => {
+  return aiRequests.post('/memory', { thread_id: threadID })
+}

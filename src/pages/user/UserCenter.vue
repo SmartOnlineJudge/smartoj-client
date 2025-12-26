@@ -4,6 +4,7 @@ import SolutionHeatMap from "@/components/user/user-center/SolutionHeatMap.vue";
 import ActivationRecord from "@/components/user/user-center/ActivationRecord.vue";
 import UserProfile from "@/components/user/user-center/UserProfile.vue";
 import SolutionSummary from "@/components/user/user-center/SolutionSummary.vue";
+import PersonalizedMemory from "@/components/user/user-center/PersonalizedMemory.vue";
 
 </script>
 
@@ -15,11 +16,9 @@ import SolutionSummary from "@/components/user/user-center/SolutionSummary.vue";
     </div>
     <div class="user-center-right">
       <!-- 刷题总结、其他 -->
-      <div style="display: flex;">
+      <div style="display: flex;height: 190px;">
         <SolutionSummary class="base-box-style" style="width: 49%;"/>
-        <div class="base-box-style" style="width: 49%;margin-left: auto;">
-          暂时不知道放什么
-        </div>
+        <PersonalizedMemory class="base-box-style" style="width: 49%;margin-left: auto;overflow: auto;"/>
       </div>
       <!-- 刷题热力图 -->
       <SolutionHeatMap class="base-box-style"/>
