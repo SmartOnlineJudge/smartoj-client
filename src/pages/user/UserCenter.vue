@@ -9,8 +9,9 @@ import SolutionSummary from "@/components/user/user-center/SolutionSummary.vue";
 
 <template>
   <div class="user-center">
-    <div class="user-center-left base-box-style">
-      <UserBaseInfo/>
+    <div class="user-center-left">
+      <UserBaseInfo class="base-box-style"/>
+      <UserProfile class="base-box-style"/>
     </div>
     <div class="user-center-right">
       <!-- 刷题总结、其他 -->
@@ -22,8 +23,6 @@ import SolutionSummary from "@/components/user/user-center/SolutionSummary.vue";
       </div>
       <!-- 刷题热力图 -->
       <SolutionHeatMap class="base-box-style"/>
-      <!-- 用户画像、用户能力 -->
-      <UserProfile class="base-box-style"/>
       <!-- 活跃记录 -->
       <ActivationRecord class="base-box-style"/>
     </div>

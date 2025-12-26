@@ -289,3 +289,7 @@ export const getConversationDetail = questionID => {
 export const getRecommendedQuestions = () => {
   return requests.get('/recommendation/questions')
 }
+
+export const getUserProfile = () => {
+  return requests.get('/recommendation/user-profile')
+}
