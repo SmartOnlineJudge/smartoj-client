@@ -1,4 +1,5 @@
 import axios from "axios";
+import qs from 'qs';
 
 export const requests = axios.create({
   baseURL: '/api',
@@ -63,6 +64,34 @@ export const getJudgeRecord = (submitRecordID, requireInputOutput) => {
 
 export const getLanguageList = () => {
   return requests.get('/question/languages')
+}
+
+export const getTagsList = (requireQuestionCount) => {
+    return requests.get('/question/tags', {params: {require_question_count: requireQuestionCount}})
+}
+
+export const getQuestionList = (page, pageSize, tags, difficulty, keyword) => {
+    let params = {page: page, size: pageSize}
+    let restParas = {tags: tags, difficulty: difficulty, keyword: keyword}
+    Object.keys(restParas).forEach(key => {
+        if (restParas[key] !== null) {
+            params[key] = restParas[key]
+        }
+    });
+     return requests.get('/question/questions', {
+        params: params,
+        paramsSerializer: params => {
+            return qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+
+export const getHotQuestionList = () => {
+    return requests.get('/question/popular-questions')
+}
+
+export const getRankingList = () => {
+    return requests.get('/question/solution-ranking')
 }
 
 export const getPassedCountGroupByDifficulty = () => {
