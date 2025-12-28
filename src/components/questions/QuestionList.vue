@@ -2,7 +2,6 @@
 import {ClearOutlined, DownOutlined, SearchOutlined} from "@ant-design/icons-vue";
 import {computed, onBeforeMount, reactive, ref, watch} from "vue";
 import {getQuestionList, getTagsList} from "@/http.js";
-import { useRouter } from 'vue-router'
 
 onBeforeMount(() => {
   getTagsList(true).then(response => {
@@ -16,7 +15,7 @@ onBeforeMount(() => {
 
 //顶部标签
 const tagsData = reactive({})
-const showTags = ref(false)
+const showTags = ref(true)
 const tagsDataShow = computed(() => {
   if (showTags.value) {
     return tagsData;
@@ -66,6 +65,7 @@ const pagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
+  pageSizeOptions: ['10', '20', '50']
 })
 const questionsLoading = ref(false)
 const pageChangeHandler = (pageCurrent, pageSize) => {
@@ -110,15 +110,19 @@ const questionColumns = [
     align: 'center',
   }
 ]
-const router = useRouter()
 const rowClick = (record) => {
   return {
     onClick: () => {
-       router.push(`/coding/${record.id}`)
+      window.open(`/coding/${record.id}`)
+    },
+    onMouseenter: () => {
+      document.body.style.cursor = 'pointer';
+    },
+    onMouseleave: () => {
+      document.body.style.cursor = '';
     }
   }
 }
-
 </script>
 
 <template>
@@ -159,24 +163,27 @@ const rowClick = (record) => {
           </a-menu>
         </template>
         <a-button
-            :style="difficultySelect?{backgroundColor:'#bae7ff',color: '#1890ff'}:{backgroundColor: '#f3f3f3'}">
+            :style="difficultySelect ? {backgroundColor:'#bae7ff',color: '#1890ff'}:{backgroundColor: 'unset'}">
           难度
           <DownOutlined/>
         </a-button>
       </a-dropdown>
       <div>
-        <a-button @click="()=>{openTag=true}"
-                  :style="selectedTags.length > 0?{backgroundColor:'#bae7ff',color: '#1890ff'}:{backgroundColor: '#f3f3f3'}">
+        <a-button 
+          @click="() => { openTag = true }"
+          :style="selectedTags.length > 0 ? {backgroundColor: '#bae7ff', color: '#1890ff'}: {backgroundColor: 'unset'}"
+        >
           标签
         </a-button>
-        <a-modal v-model:open="openTag"
-                 width=600px
-                 :closable="false"
-                 cancelText="取消"
-                 okText="确认"
-                 @ok="() => {openTag = false;selectedTags = selectingTags}"
-                 :maskClosable="false"
-                 @cancel="()=>{selectingTags=selectedTags}"
+        <a-modal 
+          v-model:open="openTag"
+          width="40%"
+          :closable="false"
+          cancelText="取消"
+          okText="确认"
+          @ok="() => {openTag = false;selectedTags = selectingTags}"
+          :maskClosable="false"
+          @cancel="()=>{selectingTags=selectedTags}"
         >
           <template #title>
             <span style="font-size: 20px; font-weight: bold;">选择标签</span>
@@ -195,8 +202,11 @@ const rowClick = (record) => {
           </div>
         </a-modal>
       </div>
-      <a-input v-model:value="searchValue" placeholder="搜索题目、编号或内容"
-               style="background-color: #f3f3f3">
+      <a-input 
+        v-model:value="searchValue" 
+        placeholder="搜索题目、编号或内容"
+        type="primary"
+      >
         <template #prefix>
           <SearchOutlined/>
         </template>
@@ -207,23 +217,27 @@ const rowClick = (record) => {
     </a-space>
   </div>
   <div class="questions-list">
-    <a-table :dataSource="questionsData" :columns="questionColumns" :pagination="pagination"
-             style="font-size: 15px;margin: 0 1%"
-             :loading=questionsLoading
-             :customRow="rowClick"
-             @change="(page)=>{pageChangeHandler(page.current,page.pageSize)}">
+    <a-table 
+      :dataSource="questionsData" 
+      :columns="questionColumns" 
+      :pagination="pagination"
+      style="font-size: 15px;"
+      :loading=questionsLoading
+      :customRow="rowClick"
+      @change="page => { pageChangeHandler(page.current, page.pageSize) }"
+    >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'title'">
-          {{ record.id }}{{ '. ' }}{{ record.title }}
+          <span>{{ record.id }}.{{ record.title }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'difficulty'">
-          <span v-if="record.difficulty==='easy'" style="color: #00CACA;font-size: 15px">
+          <span v-if="record.difficulty==='easy'" style="color: #52c41a;font-size: 15px">
             简单
           </span>
-          <span v-else-if="record.difficulty==='medium'" style="color: #FFD306;font-size: 15px">
+          <span v-else-if="record.difficulty==='medium'" style="color: #faad14;font-size: 15px">
             中等
           </span>
-          <span v-else style="color: #FF5809;font-size: 15px">困难</span>
+          <span v-else style="color: #ff4d4f;font-size: 15px">困难</span>
         </template>
       </template>
     </a-table>
@@ -231,11 +245,10 @@ const rowClick = (record) => {
 </template>
 
 <style scoped>
-.operate {
-  margin: 3.5% 3% 2%;
-}
-
 .tags-list {
-  margin: 2% 3%;
+  margin: 10px 0 20px 0;
+}
+.operate {
+  margin: 25px 0 20px 0;
 }
 </style>
