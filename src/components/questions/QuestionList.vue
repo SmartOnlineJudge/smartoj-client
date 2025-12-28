@@ -50,13 +50,35 @@ const tagSelected = (tag, checked) => {
 //搜索框
 const searchValue = ref(null)
 
+//防抖函数
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+};
+
 //筛选
-watch([searchValue, difficultySelect, selectedTags], () => {
+watch([difficultySelect, selectedTags], () => {
   openClearFilters.value = true
   getQuestionList(1, pagination.pageSize, selectingTags.value, difficultySelect.value, searchValue.value).then(response => {
     questionsData.value = response.data.data.results
     pagination.total = response.data.data.total
   })
+})
+
+// 为搜索框单独设置防抖监听
+const debouncedSearch = debounce(() => {
+  openClearFilters.value = true
+  getQuestionList(1, pagination.pageSize, selectingTags.value, difficultySelect.value, searchValue.value).then(response => {
+    questionsData.value = response.data.data.results
+    pagination.total = response.data.data.total
+  })
+}, 500); // 500ms 延迟
+
+watch(searchValue, () => {
+  debouncedSearch();
 })
 
 //题目列表
@@ -81,21 +103,17 @@ const pageChangeHandler = (pageCurrent, pageSize) => {
 const questionColumns = [
   {
     title: '题目',
-    dataIndex: 'title',
-    align: 'center',
-    width: '30%',
+    dataIndex: 'title'
   },
   {
     title: '提交数量',
     dataIndex: 'submission_quantity',
-    align: 'center',
-    width: '30%'
+    align: 'center'
   },
   {
     title: '通过率',
     dataIndex: 'pass_quantity',
     align: 'center',
-    width: '20%',
     customRender: ({record}) => {
       if (!record.submission_quantity || !record.pass_quantity) {
         return '0.0%';

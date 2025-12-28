@@ -21,9 +21,8 @@ import RankingList from "@/components/questions/RankingList.vue"
 <style scoped>
 .questions-container {
   display: flex;
-  justify-content: space-between;
   margin: 20px auto 10px auto;
-  width: 80vw;
+  width: 75vw;
 }
 .questions {
   background-color: white;
@@ -31,5 +30,8 @@ import RankingList from "@/components/questions/RankingList.vue"
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   padding: 15px 20px;
+}
+.side-content {
+  margin-left: 15px;
 }
 </style>
