@@ -1,8 +1,9 @@
 <script setup>
-import { ref, watch } from 'vue'
-import Terminal from './Terminal.vue';
-import CodeEditor from './CodeEditor.vue';
-import SolvingAssistantAgent from './SolvingAssistantAgent.vue';
+import { ref, watch, defineAsyncComponent } from 'vue'
+
+const SolvingAssistantAgent = defineAsyncComponent(() => import('@/components/coding/SolvingAssistantAgent.vue'));
+const Terminal = defineAsyncComponent(() => import('@/components/coding/Terminal.vue'));
+const CodeEditor = defineAsyncComponent(() => import('@/components/coding/CodeEditor.vue'));
 
 // 上方面板高度百分比，默认70%
 const topHeight = ref(70)

@@ -28,6 +28,25 @@ export default defineConfig(({ command, mode }) => {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // 将大型库分离到单独的chunk中
+            'monaco-editor': ['monaco-editor'],
+            'ant-design': ['ant-design-vue'],
+            // 将Markdown编辑器分离
+            'markdown-editor': ['@kangc/v-md-editor'],
+            // 将数学公式库分离
+            'katex': ['katex'],
+            // 将代码高亮库分离
+            'highlight': ['highlight.js'],
+            // 将公共代码分离
+            vendor: ['vue', 'vue-router', 'pinia', 'axios', 'qs']
+          }
+        }
+      },
+    },
     server: {
       host: '0.0.0.0',
       proxy: {
@@ -47,4 +66,3 @@ export default defineConfig(({ command, mode }) => {
     },
   };
 });
-

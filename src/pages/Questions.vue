@@ -1,8 +1,9 @@
 <script setup>
-import QuestionList from "@/components/questions/QuestionList.vue"
-import HotQuestions from "@/components/questions/HotQuestions.vue"
-import RankingList from "@/components/questions/RankingList.vue"
+import { defineAsyncComponent } from "vue"
 
+const QuestionList = defineAsyncComponent(() => import('@/components/questions/QuestionList.vue'));
+const HotQuestions = defineAsyncComponent(() => import('@/components/questions/HotQuestions.vue'));
+const RankingList = defineAsyncComponent(() => import('@/components/questions/RankingList.vue'));
 </script>
 
 <template>

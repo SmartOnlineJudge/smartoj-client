@@ -1,10 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import QuestionInfoPanel from '@/components/coding/QuestionInfoPanel.vue';
-import WorkSpace from '@/components/coding/WorkSpace.vue';
+import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { getOnlineSovlingQuestionInfo } from '@/http';
 import { useQuestionStore } from '@/stores';
 import router from '@/router/index.js';
+
+const QuestionInfoPanel = defineAsyncComponent(() => import('@/components/coding/QuestionInfoPanel.vue'));
+const WorkSpace = defineAsyncComponent(() => import('@/components/coding/WorkSpace.vue'));
 
 const props = defineProps({
   questionID: Number

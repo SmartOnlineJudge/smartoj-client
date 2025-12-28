@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, defineAsyncComponent } from 'vue';
 import { 
   ProfileOutlined, 
   MessageOutlined, 
@@ -8,10 +8,11 @@ import {
   FileTextTwoTone
 } from '@ant-design/icons-vue';
 import { useQuestionStore, useUserStore } from '@/stores';
-import QuestionDescription from './question-info-panel/QuestionDescription.vue';
-import QuestionSubmitRecord from './question-info-panel/QuestionSubmitRecord.vue';
-import QuestionCommunicationArea from './question-info-panel/QuestionCommunicationArea.vue';
-import QuestionSolutionArea from './question-info-panel/QuestionSolutionArea.vue';
+
+const QuestionDescription = defineAsyncComponent(() => import('@/components/coding/question-info-panel/QuestionDescription.vue'));
+const QuestionSubmitRecord = defineAsyncComponent(() => import('@/components/coding/question-info-panel/QuestionSubmitRecord.vue'));
+const QuestionCommunicationArea = defineAsyncComponent(() => import('@/components/coding/question-info-panel/QuestionCommunicationArea.vue'));
+const QuestionSolutionArea = defineAsyncComponent(() => import('@/components/coding/question-info-panel/QuestionSolutionArea.vue'));
 
 const questionStore = useQuestionStore()
 const userStore = useUserStore()
