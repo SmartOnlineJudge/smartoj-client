@@ -1,6 +1,8 @@
 <script setup>
-import { QqOutlined, GithubFilled } from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
 import router from "@/router/index.js";
+import { userLogin } from "@/http.js";
+import { requestAndUpdateUser } from "@/utils.js";
 
 const props = defineProps({
   app: String,
@@ -21,6 +23,28 @@ const judgeIsValid = () => {
     return false;
   }
 }
+
+const oAuth2Login = () => {
+  let redirectURL = '/login';
+  userLogin({ code: props.code, auth_type: props.app }).then(response => {
+    if (response.data.code === 300) {
+      message.success('登录成功，页面正在跳转……')
+      redirectURL = '/user/user-center'
+      requestAndUpdateUser().then(() => {})
+    } else {
+      message.error('登录失败，请重新尝试')
+      redirectURL = '/login'
+    }
+  }).catch(() => {
+    message.error("登录异常，请联系网站管理员")
+    redirectURL = '/login'
+  }).finally(() => {
+    setTimeout(() => {
+      router.push(redirectURL);
+    }, 2000)
+  })
+}
+
 const isValid = judgeIsValid()
 let title, subTitle, status;
 
@@ -32,6 +56,7 @@ if (!isValid) {
   title = '成功与第三方平台授权！';
   subTitle = '系统后台正在处理相应请求，请不要关闭当前页面，稍等片刻，等待页面重定向……'
   status = 'info'
+  oAuth2Login()
 }
 </script>
 
@@ -43,8 +68,8 @@ if (!isValid) {
         :status="status"
     >
       <template #icon>
-        <GithubFilled v-if="props.app === 'github'" />
-        <QqOutlined v-else-if="props.app === 'qq'" />
+        <img v-if="props.app === 'github'" src="/github-mark.svg" width="80" alt="github logo"/>
+        <img v-else-if="props.app === 'qq'" src="/qq-mask.png" width="80" alt="qq logo"/>
       </template>
       <template #extra>
         <a-spin v-if="isValid" :spinning="true" size="large"></a-spin>

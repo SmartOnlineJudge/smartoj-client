@@ -4,17 +4,13 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/',
-      name: 'index',
-      component: () => import('../pages/Index.vue')
-    },
-    {
-      path: '/coding',
+      path: '/coding/:questionID',
       name: 'coding',
-      component: () => import('../pages/Coding.vue')
+      component: () => import('../pages/Coding.vue'),
+      props: route => ({ questionID: Number(route.params.questionID) }),
     },
     {
-      path: '/questions',
+      path: '/',
       name: 'questions',
       component: () => import('../pages/Questions.vue')
     },
@@ -45,14 +41,27 @@ const router = createRouter({
       component: () => import('../pages/user/UserAccount.vue')
     },
     {
-      path: '/user/new-question',
-      name: 'new-question',
-      component: () => import('../pages/user/NewQuestion.vue')
-    },
-    {
       path: '/user/my-message',
       name: 'my-message',
       component: () => import('../pages/user/MyMessage.vue')
+    },
+    {
+      path: '/create-solution/:questionID',
+      name: 'create-solution',
+      component: () => import('../pages/CreateSolution.vue'),
+      props: route => ({ questionID: Number(route.params.questionID) }),
+    },
+    {
+      path: '/404',
+      name: 'not-found',
+      component: () => import('../pages/NotFound.vue'),
+      meta: {
+        title: '找不到该页面'
+      }
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/404'
     }
   ]
 })
