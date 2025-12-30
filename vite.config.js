@@ -31,18 +31,26 @@ export default defineConfig(({ command, mode }) => {
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            // 将大型库分离到单独的chunk中
-            'monaco-editor': ['monaco-editor'],
-            'ant-design': ['ant-design-vue'],
-            // 将Markdown编辑器分离
-            'markdown-editor': ['@kangc/v-md-editor'],
-            // 将数学公式库分离
-            'katex': ['katex'],
-            // 将代码高亮库分离
-            'highlight': ['highlight.js'],
-            // 将公共代码分离
-            vendor: ['vue', 'vue-router', 'pinia', 'axios', 'qs']
+          manualChunks: (id) => {
+            if (id.includes('node_modules')) {
+              // 将大型依赖分离到各自的chunk中
+              if (id.includes('monaco-editor')) {
+                return 'monaco-editor';
+              }
+              if (id.includes('ant-design-vue') || id.includes('ant-design-x-vue')) {
+                return 'ant-design';
+              }
+              if (id.includes('@kangc/v-md-editor')) {
+                return 'markdown-editor';
+              }
+              if (id.includes('highlight.js')) {
+                return 'highlight';
+              }
+              if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia') || id.includes('axios') || id.includes('qs')) {
+                return 'vendor';
+              }
+              return 'commons';
+            }
           }
         }
       },
