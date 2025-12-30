@@ -2,10 +2,11 @@
 import { ref, watch, onMounted } from "vue";
 import { CaretRightOutlined } from '@ant-design/icons-vue';
 
-import { useQuestionStore } from '@/stores';
+import { useQuestionStore, useUserStore } from '@/stores';
 import { getRecommendedQuestions } from "@/http";
 
 const questionStore = useQuestionStore()
+const userStore = useUserStore()
 
 const title = ref("");
 const description = ref("");
@@ -29,8 +30,10 @@ onMounted(async () => {
       passedRate.value = questionStore.question.pass_quantity / questionStore.question.submission_quantity
     }
   })
-  const response = await getRecommendedQuestions()
-  recommendedQuestions.value = response.data.data
+  if (userStore.isLogin) {
+    const response = await getRecommendedQuestions()
+    recommendedQuestions.value = response.data.data
+  }
 })
 
 const skipToQuestion = (questionID) => {
