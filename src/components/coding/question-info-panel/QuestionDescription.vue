@@ -18,18 +18,20 @@ const activeKey = ref("11")
 const submissionCount = ref(0)
 const passedRate = ref(0)
 
+watch(() => questionStore.question, (val) => {
+  if (val === null) return;
+  title.value = questionStore.question.title;
+  description.value = questionStore.question.description;
+  tags.value = questionStore.question.tags;
+  difficulty.value = questionStore.question.difficulty;
+  loading.value = false;
+  submissionCount.value = questionStore.question.submission_quantity
+  if (submissionCount.value > 0) {
+    passedRate.value = questionStore.question.pass_quantity / questionStore.question.submission_quantity
+  }
+}, { immediate: true })
+
 onMounted(async () => {
-  watch(() => questionStore.question, () => {
-    title.value = questionStore.question.title;
-    description.value = questionStore.question.description;
-    tags.value = questionStore.question.tags;
-    difficulty.value = questionStore.question.difficulty;
-    loading.value = false;
-    submissionCount.value = questionStore.question.submission_quantity
-    if (submissionCount.value > 0) {
-      passedRate.value = questionStore.question.pass_quantity / questionStore.question.submission_quantity
-    }
-  })
   if (userStore.isLogin) {
     const response = await getRecommendedQuestions()
     recommendedQuestions.value = response.data.data

@@ -13,7 +13,7 @@ export const useUserStore = defineStore('user', () => {
 })
 
 export const useQuestionStore = defineStore('question', () => {
-  const question = ref({})
+  const question = ref(null)
   const judgeRecords = ref([])
   const judgeType = ref('')
   const judgeID = ref(1)

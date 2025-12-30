@@ -49,29 +49,31 @@ watch(solvingFramework, newValue => {
   questionStore.setCode(newValue)
 })
 
-onMounted(() => {
-  watch(() => questionStore.question, () => {
-    let _validLanguages = []
-    let _solvingFrameworks = {}
-    questionStore.question.solving_frameworks.forEach(lang => {
-      let languageName = lang.language.name
-      _validLanguages.push({
-        name: languageName,
-        value: languageValueMapping[languageName]
-      })
-      const key = languageValueMapping[languageName]
-      const value = lang.code_framework
-      _solvingFrameworks[key] = value
+watch(() => questionStore.question, (val) => {
+  if (val === null) return;
+  let _validLanguages = []
+  let _solvingFrameworks = {}
+  questionStore.question.solving_frameworks.forEach(lang => {
+    let languageName = lang.language.name
+    _validLanguages.push({
+      name: languageName,
+      value: languageValueMapping[languageName]
     })
-    _validLanguages.sort((a, b) => a.name.localeCompare(b.name))
-    validLanguages.value = _validLanguages
-    solvingFrameworks.value = _solvingFrameworks
-    // 从有效的编程语言列表中选择一个作为默认编程语言
-    currentLanguage.value = languageValueMapping[_validLanguages[0].name]
-    // 页面首次加载的时候需要先更新解题框架
-    solvingFramework.value = _solvingFrameworks[currentLanguage.value] || "";
-    skeletonLoading.value = false
+    const key = languageValueMapping[languageName]
+    const value = lang.code_framework
+    _solvingFrameworks[key] = value
   })
+  _validLanguages.sort((a, b) => a.name.localeCompare(b.name))
+  validLanguages.value = _validLanguages
+  solvingFrameworks.value = _solvingFrameworks
+  // 从有效的编程语言列表中选择一个作为默认编程语言
+  currentLanguage.value = languageValueMapping[_validLanguages[0].name]
+  // 页面首次加载的时候需要先更新解题框架
+  solvingFramework.value = _solvingFrameworks[currentLanguage.value] || "";
+  skeletonLoading.value = false
+}, { immediate: true })
+
+onMounted(() => {
   getLanguageList().then(response => {
     const languageList = response.data.data
     languageList.forEach(lang => {

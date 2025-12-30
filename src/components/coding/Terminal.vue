@@ -12,7 +12,8 @@ const questionStore = useQuestionStore();
 const tests = ref([]);
 const loading = ref(true);
 
-watch(() => questionStore.question, () => {
+watch(() => questionStore.question, (val) => {
+  if (val === null) return;
   const _tests = []
   questionStore.question.tests.forEach(test => {
     _tests.push({test_id: test.id, input_output: test.input_output})
@@ -20,7 +21,7 @@ watch(() => questionStore.question, () => {
   _tests.sort((a, b) => a.test_id - b.test_id)
   tests.value = _tests
   loading.value = false
-})
+}, { immediate: true })
 
 watch(() => questionStore.judgeID, () => {
   const judgeType = questionStore.judgeType
